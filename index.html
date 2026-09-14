@@ -27,7 +27,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .logo{font-family:'Bebas Neue';font-size:26px;letter-spacing:2px;color:var(--accent)}
 .hdr-right{display:flex;align-items:center;gap:10px}
 .hdr-date{font-size:11px;color:var(--muted)}
-.icon-btn{background:none;border:1px solid var(--b2);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer;transition:all .15s}
+.icon-btn{background:none;border:1px solid var(--b2);color:var(--muted);border-radius:8px;padding:6px 12px;font-family:"Bebas Neue";font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .15s}
 .icon-btn:hover,.icon-btn.active{border-color:var(--accent);color:var(--accent)}
 
 /* WEEK VIEW — MAIN */
@@ -65,7 +65,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 /* BOTTOM NAV */
 .bnav{display:flex;border-top:1px solid var(--b1);flex-shrink:0}
 .bnav-btn{flex:1;background:none;border:none;color:var(--muted);font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;padding:10px 4px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s}
-.bnav-btn .ic{font-size:18px}
 .bnav-btn.active{color:var(--accent)}
 
 /* SHEETS */
@@ -152,10 +151,10 @@ select.inp{appearance:none;cursor:pointer}
   <div class="logo">KOVÁRNA</div>
   <div class="hdr-right">
     <span class="hdr-date" id="hdr-date"></span>
-    <button class="icon-btn" onclick="openMonth()" title="Měsíc">📅</button>
-    <button class="icon-btn active" id="btn-week" onclick="showView('week')">💪</button>
-    <button class="icon-btn" id="btn-hist" onclick="showView('hist')">📋</button>
-    <button class="icon-btn" id="btn-prog" onclick="showView('prog')">📈</button>
+    <button class="icon-btn" onclick="openMonth()">MĚSÍC</button>
+    <button class="icon-btn active" id="btn-week" onclick="showView('week')">TÝDEN</button>
+    <button class="icon-btn" id="btn-hist" onclick="showView('hist')">HISTORIE</button>
+    <button class="icon-btn" id="btn-prog" onclick="showView('prog')">PROGRES</button>
   </div>
 </div>
 
@@ -171,7 +170,7 @@ select.inp{appearance:none;cursor:pointer}
   </div>
   <div class="ai-strip">
     <button class="ai-btn" id="ai-btn" onclick="getAI()">
-      <span>🤖</span><span>Co dnes cvičit? — zeptat se AI</span>
+      <span>Co dnes cvičit? — AI trenér</span>
     </button>
     <div class="ai-result" id="ai-result"></div>
   </div>
@@ -194,9 +193,9 @@ select.inp{appearance:none;cursor:pointer}
 
 <!-- BOTTOM NAV -->
 <div class="bnav">
-  <button class="bnav-btn active" id="bnav-week" onclick="showView('week')"><span class="ic">💪</span>Týden</button>
-  <button class="bnav-btn" id="bnav-hist" onclick="showView('hist')"><span class="ic">📋</span>Historie</button>
-  <button class="bnav-btn" id="bnav-prog" onclick="showView('prog')"><span class="ic">📈</span>Progres</button>
+  <button class="bnav-btn active" id="bnav-week" onclick="showView('week')">Týden</button>
+  <button class="bnav-btn" id="bnav-hist" onclick="showView('hist')">Historie</button>
+  <button class="bnav-btn" id="bnav-prog" onclick="showView('prog')">Progres</button>
 </div>
 
 <!-- OVERLAY -->
@@ -212,7 +211,7 @@ select.inp{appearance:none;cursor:pointer}
   <div id="day-sessions"></div>
   <button class="btn" onclick="openTrainSheet()">+ ZAPSAT TRÉNINK</button>
   <div class="divider"><span>NEBO</span></div>
-  <button class="btn-g" onclick="saveRest()">🛌 Označit jako volno</button>
+  <button class="btn-g" onclick="saveRest()">Označit jako volno</button>
 </div>
 
 <!-- TRAIN SHEET -->
@@ -393,8 +392,8 @@ function renderDaySessions(){
       </div>
       <div class="session-sets">${setsHtml}</div>
       <div class="session-actions">
-        <button class="s-btn edit" onclick="editEx(${idx})">✏️ Upravit</button>
-        <button class="s-btn del" onclick="delEx(${idx})">🗑 Smazat</button>
+        <button class="s-btn edit" onclick="editEx(${idx})">Upravit</button>
+        <button class="s-btn del" onclick="delEx(${idx})">Smazat</button>
       </div>
     </div>`;
   }).join('');
@@ -569,7 +568,7 @@ function renderHist(){
     return `<div class="hi">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px" onclick="togH('${k}')">
         <div><span class="tag">${g.grp}</span><span style="font-size:14px;font-weight:500;margin-left:8px">${g.ex}</span></div>
-        <button class="s-btn del" onclick="event.stopPropagation();delGroup('${k}')">🗑</button>
+        <button class="s-btn del" onclick="event.stopPropagation();delGroup('${k}')">Smazat</button>
       </div>
       <div style="font-size:12px;color:var(--muted);cursor:pointer" onclick="togH('${k}')">${g.date} · ${g.sets.length} sérií · max ${mx}kg · ${tr} opak.</div>
       ${exp?`<div style="margin-top:10px;background:var(--s2);border-radius:8px;padding:10px 12px">
