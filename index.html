@@ -895,21 +895,48 @@ async function planWeek(){
       return true;
     });
 
-    // Ulož plán do Supabase
-    for(const p of plan){
-      await sb.from('week_plans').upsert({date:p.date,grp:p.grp,confirmed:false},{onConflict:'date'});
+    // Neukládej rovnou — zobraz návrh k potvrzení
+    pendingPlan=plan;
+    if(!plan.length){
+      res.innerHTML='Žádný den nesplňuje podmínku odpočinku partií — zkus to příští týden.';
+      return;
     }
-    await loadWeekPlans();
-    renderWeek();
-
-    res.textContent=plan.length?
-      'Naplánováno: '+plan.map(p=>p.date+' — '+p.grp).join(', ')+'. Uvidíš to v týdenním přehledu.':
-      'Žádný den nesplňuje podmínku odpočinku partií — zkus to příští týden.';
+    const planHtml=plan.map(p=>{
+      const grps=p.grp.split(',').map(g=>g.trim());
+      const chips=grps.map(g=>`<span style="color:${GRP_COLORS[g]};font-weight:500">${g}</span>`).join(' + ');
+      return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.08)"><span>${p.date}</span><span>${chips}</span></div>`;
+    }).join('');
+    res.innerHTML=`
+      <div style="margin-bottom:10px;font-weight:500">Návrh na tento týden:</div>
+      ${planHtml}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" onclick="approvePlan()" style="margin-top:0;flex:1">ANO, naplánovat</button>
+        <button class="btn-g" onclick="rejectPlan()" style="margin-top:0;flex:1">Zrušit</button>
+      </div>
+    `;
   }catch(e){
     res.textContent='Chyba plánování: '+e.message;
   }
 }
 
+let pendingPlan=[];
+
+async function approvePlan(){
+  const res=document.getElementById('ai-result');
+  res.textContent='Ukládám plán...';
+  for(const p of pendingPlan){
+    await sb.from('week_plans').upsert({date:p.date,grp:p.grp,confirmed:false},{onConflict:'date'});
+  }
+  await loadWeekPlans();
+  renderWeek();
+  res.textContent='✓ Naplánováno! Uvidíš to v týdenním přehledu.';
+  pendingPlan=[];
+}
+
+function rejectPlan(){
+  pendingPlan=[];
+  document.getElementById('ai-result').style.display='none';
+}
 async function sendAI(quickMsg){
   const input=document.getElementById('ai-input');
   const send=document.getElementById('ai-send');
