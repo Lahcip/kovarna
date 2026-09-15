@@ -48,6 +48,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .w-day.today{border-color:var(--accent);background:var(--abg)}
 .w-day.has-train{background:var(--abg);border-color:#2d3d00}
 .w-day.is-rest{background:var(--s2);border-color:var(--b2)}
+.w-day.has-plan{border-style:dashed}
 .w-day-left{display:flex;align-items:center;gap:12px;min-width:80px}
 .w-day-name{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;min-width:20px}
 .w-day-num{font-family:'Bebas Neue';font-size:28px;color:var(--text);line-height:1}
@@ -190,7 +191,7 @@ select.inp{appearance:none;cursor:pointer}
     <div class="ai-quick-chips">
       <button class="ai-chip" onclick="sendAI('Co bych měl dnes cvičit?')">Dnes</button>
       <button class="ai-chip" onclick="sendAI('Co bych měl cvičit zítra?')">Zítra</button>
-      <button class="ai-chip" onclick="sendAI('Udělej mi plán na tento týden podle mé historie.')">Plán týdne</button>
+      <button class="ai-chip" onclick="planWeek()">Naplánovat týden</button>
       <button class="ai-chip" onclick="sendAI('Jak si celkově vedu? Zhodnoť můj pokrok.')">Pokrok</button>
     </div>
     <div class="ai-input-row">
@@ -277,6 +278,14 @@ select.inp{appearance:none;cursor:pointer}
     <button class="close-btn" onclick="closeAll()">×</button>
   </div>
   <div id="day-sessions"></div>
+  <div id="day-plan-box" style="display:none;background:var(--abg);border:1px dashed #2d3d00;border-radius:10px;padding:12px;margin-bottom:16px">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px">NAVRŽENO AI</div>
+    <div id="day-plan-text" style="font-size:15px;font-weight:500;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="confirmPlan()" style="margin-top:0">Potvrdit</button>
+      <button class="btn-g" onclick="editPlan()" style="margin-top:0">Upravit</button>
+    </div>
+  </div>
   <button class="btn" onclick="openTrainSheet()">+ ZAPSAT TRÉNINK</button>
   <div class="divider"><span>NEBO</span></div>
   <button class="btn-g" onclick="saveRest()">Označit jako volno</button>
@@ -356,7 +365,7 @@ let activeView='week';
 async function init(){
   document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('cs-CZ');
   renderG();renderE();renderS();
-  await Promise.all([loadSessions(),loadRestDays()]);
+  await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans()]);
   renderWeek();renderHist();renderProg();
 
   // Swipe between weeks
@@ -417,10 +426,12 @@ function renderWeek(){
     const d=new Date(weekStart);d.setDate(d.getDate()+i);
     const dstr=ds(d);
     const hasTrain=dates.has(dstr),isRest=rests.has(dstr),isToday=dstr===todayStr;
+    const plan=weekPlans[dstr];
+    const hasPlan=plan&&!hasTrain&&!isRest;
     const grps=grpsFor(dstr);
     const dots=grps.map(g=>`<div class="w-dot" style="background:${GRP_COLORS[g]}"></div>`).join('');
     const labels=grps.map(g=>`<span class="w-grp-label" style="color:${GRP_COLORS[g]};background:${GRP_COLORS[g]}22">${g}</span>`).join('');
-    html+=`<div class="w-day${hasTrain?' has-train':''}${isRest?' is-rest':''}${isToday?' today':''}" onclick="openDay('${dstr}')">
+    html+=`<div class="w-day${hasTrain?' has-train':''}${isRest?' is-rest':''}${isToday?' today':''}${hasPlan?' has-plan':''}" onclick="openDay('${dstr}')">
       <div class="w-day-left">
         <div class="w-day-name">${DAYS[d.getDay()]}</div>
         <div class="w-day-num">${d.getDate()}</div>
@@ -428,7 +439,8 @@ function renderWeek(){
       <div class="w-day-right">
         ${hasTrain?`<div class="w-grp-labels">${labels}</div>`:''}
         ${isRest?'<span class="w-rest">Volno</span>':''}
-        ${!hasTrain&&!isRest?'<span style="font-size:11px;color:var(--m2)">—</span>':''}
+        ${hasPlan?`<span class="w-grp-label" style="color:${GRP_COLORS[plan.grp]};background:${GRP_COLORS[plan.grp]}15;border:1px dashed ${GRP_COLORS[plan.grp]}66">${plan.grp}?</span>`:''}
+        ${!hasTrain&&!isRest&&!hasPlan?'<span style="font-size:11px;color:var(--m2)">—</span>':''}
       </div>
     </div>`;
   }
@@ -444,7 +456,38 @@ function openDay(date){
   const parts=date.split('.');
   document.getElementById('day-sheet-title').textContent=parts[0]+'. '+MONTHS[parseInt(parts[1])-1];
   renderDaySessions();
+
+  // Zobraz plán box pokud existuje a den ještě nemá trénink/volno
+  const planBox=document.getElementById('day-plan-box');
+  const hasTrain=sessions.some(s=>s.date===date);
+  const isRest=restDays.includes(date);
+  const plan=weekPlans[date];
+  if(plan&&!hasTrain&&!isRest){
+    planBox.style.display='block';
+    document.getElementById('day-plan-text').innerHTML=`<span class="tag" style="background:${GRP_COLORS[plan.grp]}22;color:${GRP_COLORS[plan.grp]}">${plan.grp}</span>`;
+  }else{
+    planBox.style.display='none';
+  }
+
   openSheet('day-sheet');
+}
+
+async function confirmPlan(){
+  const plan=weekPlans[selectedDate];
+  if(!plan)return;
+  grp=plan.grp;renderG();renderE();
+  document.getElementById('esel').value=(DEF[grp]||[])[0]||'';
+  updPrev();
+  // Označ plán jako potvrzený (zůstane v historii ale skryje se z dne po zapsání)
+  await sb.from('week_plans').update({confirmed:true}).eq('date',selectedDate);
+  openTrainSheet();
+}
+
+function editPlan(){
+  // Otevři normální zápis s předvyplněnou partií
+  const plan=weekPlans[selectedDate];
+  if(plan){grp=plan.grp;renderG();renderE();}
+  openTrainSheet();
 }
 
 function renderDaySessions(){
@@ -500,7 +543,11 @@ async function saveRest(){
   if(restDays.includes(selectedDate)){showToast('Rest day již označen');return;}
   await sb.from('rest_days').insert({date:selectedDate,note:''});
   restDays.push(selectedDate);
-  renderWeek();closeAll();showToast('🛌 Rest day uložen');
+  if(weekPlans[selectedDate]){
+    await sb.from('week_plans').delete().eq('date',selectedDate);
+    delete weekPlans[selectedDate];
+  }
+  renderWeek();closeAll();showToast('Rest day uložen');
 }
 
 // TRAIN SHEET
@@ -536,6 +583,11 @@ async function saveEntry(){
     closeSheet('train-sheet');
     document.getElementById('train-title').textContent='ZAPSAT TRÉNINK';
     editingIds=[];
+    // Pokud existoval plán na tento den, smaž ho — trénink je teď skutečný
+    if(weekPlans[selectedDate]){
+      await sb.from('week_plans').delete().eq('date',selectedDate);
+      delete weekPlans[selectedDate];
+    }
     renderDaySessions();renderWeek();renderHist();renderProg();
     setTimeout(()=>openSheet('day-sheet'),300);
     showToast(isEdit?'✓ Upraveno':'✓ Uloženo');
@@ -772,6 +824,68 @@ function showBodyPart(grp){
 
 // AI CHAT
 let aiHistory=[];
+
+// WEEK PLAN
+let weekPlans={}; // date -> {grp, note, confirmed}
+
+async function loadWeekPlans(){
+  const{data}=await sb.from('week_plans').select('*');
+  weekPlans={};
+  (data||[]).forEach(p=>{weekPlans[p.date]=p;});
+}
+
+async function planWeek(){
+  const btn=document.getElementById('ai-input');
+  const res=document.getElementById('ai-result');
+  res.style.display='block';res.textContent='Sestavuji plán týdne...';
+
+  try{
+    const{data:mem}=await sb.from('ai_memory').select('key,value');
+    const m={};(mem||[]).forEach(r=>m[r.key]=r.value);
+    const gld=m.grp_last_dates?JSON.parse(m.grp_last_dates):{};
+    const gc=m.grp_counts?JSON.parse(m.grp_counts):{};
+
+    // Zjisti jaké dny v aktuálním týdnu ještě nemají trénink ani plán
+    const days=[];
+    for(let i=0;i<7;i++){
+      const d=new Date(weekStart);d.setDate(d.getDate()+i);
+      const dstr=ds(d);
+      const hasTrain=sessions.some(s=>s.date===dstr);
+      const hasRest=restDays.includes(dstr);
+      days.push({date:dstr,dow:DAYS[d.getDay()],hasTrain,hasRest});
+    }
+
+    const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+' dnů').join('\n');
+    const daysInfo=days.map(d=>d.date+' ('+d.dow+')'+(d.hasTrain?' - už má trénink':d.hasRest?' - volno':' - volný den')).join('\n');
+
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
+      body:JSON.stringify({model:'groq/compound',messages:[
+        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Sestav plán na volné dny v týdnu. Odpověz POUZE JSON polem, bez textu okolo, formát: [{"date":"DD.MM.YYYY","grp":"partie"}]. Partie musí být přesně jedna z: Záda, Hrudník, Nohy, Ramena, Biceps, Triceps, Břicho. Vynech dny co už mají trénink nebo volno. Střídej partie rovnoměrně, respektuj rest dny (max 2-3 tréninkové dny v kuse).'},
+        {role:'user',content:'PARTIE:\n'+grpS+'\n\nDNY TÝDNE:\n'+daysInfo+'\n\nNaplánuj volné dny.'}
+      ],max_tokens:400,temperature:0.3})
+    });
+    if(!r.ok)throw new Error(await r.text());
+    const data=await r.json();
+    const raw=data.choices?.[0]?.message?.content||'[]';
+    const jsonMatch=raw.match(/\[[\s\S]*\]/);
+    const plan=JSON.parse(jsonMatch?jsonMatch[0]:'[]');
+
+    // Ulož plán do Supabase
+    for(const p of plan){
+      await sb.from('week_plans').upsert({date:p.date,grp:p.grp,confirmed:false},{onConflict:'date'});
+    }
+    await loadWeekPlans();
+    renderWeek();
+
+    res.textContent=plan.length?
+      'Naplánováno: '+plan.map(p=>p.date+' — '+p.grp).join(', ')+'. Uvidíš to v týdenním přehledu.':
+      'Všechny dny už mají trénink nebo volno naplánované.';
+  }catch(e){
+    res.textContent='Chyba plánování: '+e.message;
+  }
+}
 
 async function sendAI(quickMsg){
   const input=document.getElementById('ai-input');
