@@ -792,7 +792,7 @@ async function sendAI(quickMsg){
     const streak=parseInt(m.current_streak||'0');
     const today=new Date().toLocaleDateString('cs-CZ');
     const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
-    const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+'x').join('\n');
+    const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+' tréninkových dnů').join('\n');
     const exS=ae.map(e=>e+': max '+(emw[e]||0)+'kg').join('\n');
     const systemMsg='Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
     aiHistory.push({role:'user',content:msg});
@@ -817,8 +817,13 @@ async function sendAI(quickMsg){
 // AI MEMORY
 async function updateAIMemory(){
   const gc={},gld={},emw={};
+  const grpDaySet={}; // Set of unique date+grp combos to avoid counting series multiple times
   sessions.forEach(s=>{
-    gc[s.grp]=(gc[s.grp]||0)+1;
+    const key=s.grp+'|'+s.date;
+    if(!grpDaySet[key]){
+      grpDaySet[key]=true;
+      gc[s.grp]=(gc[s.grp]||0)+1; // Počítej JEN unikátní dny, ne série
+    }
     if(!gld[s.grp]||s.date>gld[s.grp])gld[s.grp]=s.date;
     if(!emw[s.ex]||s.weight>emw[s.ex])emw[s.ex]=s.weight||0;
   });
