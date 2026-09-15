@@ -487,8 +487,34 @@ async function confirmPlan(){
   if(!plan)return;
   const firstGrp=plan.grp.split(',')[0].trim();
   grp=firstGrp;renderG();renderE();
-  document.getElementById('esel').value=(DEF[grp]||[])[0]||'';
+
+  // Najdi nejčastěji používaný cvik pro tuto partii z historie
+  const grpSessions=sessions.filter(s=>s.grp===firstGrp);
+  let suggestedEx=(DEF[grp]||[])[0]||'';
+  if(grpSessions.length){
+    const exCounts={};
+    grpSessions.forEach(s=>{exCounts[s.ex]=(exCounts[s.ex]||0)+1;});
+    suggestedEx=Object.entries(exCounts).sort((a,b)=>b[1]-a[1])[0][0];
+  }
+  document.getElementById('esel').value=suggestedEx;
+
+  // Předvyplň sérii s navrženou váhou na základě posledního tréninku tohoto cviku
+  const exHistory=sessions.filter(s=>s.ex===suggestedEx&&s.grp===firstGrp);
+  if(exHistory.length){
+    const lastDate=exHistory[0].date;
+    const lastSets=exHistory.filter(s=>s.date===lastDate).sort((a,b)=>a.serie-b.serie);
+    sets=lastSets.map(s=>{
+      // Navrhni mírně vyšší váhu (progrese) při zachování reps
+      const suggestedW=s.weight?Math.round(s.weight*1.025*2)/2:s.weight;
+      return{r:s.reps||'',w:suggestedW||''};
+    });
+    if(!sets.length)sets=[{r:'',w:''}];
+  }else{
+    sets=[{r:'',w:''}];
+  }
+  renderS();
   updPrev();
+  showToast('Navrženo podle minulého tréninku — uprav podle potřeby');
   openTrainSheet();
 }
 
