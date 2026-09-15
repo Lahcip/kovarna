@@ -282,7 +282,7 @@ select.inp{appearance:none;cursor:pointer}
     <div style="font-size:11px;color:var(--muted);margin-bottom:6px">NAVRŽENO AI</div>
     <div id="day-plan-text" style="font-size:15px;font-weight:500;margin-bottom:10px"></div>
     <div style="display:flex;gap:8px">
-      <button class="btn" onclick="confirmPlan()" style="margin-top:0">Potvrdit</button>
+      <button class="btn" onclick="confirmPlan()" style="margin-top:0">Zapsat</button>
       <button class="btn-g" onclick="editPlan()" style="margin-top:0">Upravit</button>
     </div>
   </div>
@@ -439,7 +439,7 @@ function renderWeek(){
       <div class="w-day-right">
         ${hasTrain?`<div class="w-grp-labels">${labels}</div>`:''}
         ${isRest?'<span class="w-rest">Volno</span>':''}
-        ${hasPlan?`<span class="w-grp-label" style="color:${GRP_COLORS[plan.grp]};background:${GRP_COLORS[plan.grp]}15;border:1px dashed ${GRP_COLORS[plan.grp]}66">${plan.grp}?</span>`:''}
+        ${hasPlan?plan.grp.split(',').map(g=>`<span class="w-grp-label" style="color:${GRP_COLORS[g.trim()]};background:${GRP_COLORS[g.trim()]}15;border:1px dashed ${GRP_COLORS[g.trim()]}66">${g.trim()}?</span>`).join(''):''}
         ${!hasTrain&&!isRest&&!hasPlan?'<span style="font-size:11px;color:var(--m2)">—</span>':''}
       </div>
     </div>`;
@@ -464,7 +464,7 @@ function openDay(date){
   const plan=weekPlans[date];
   if(plan&&!hasTrain&&!isRest){
     planBox.style.display='block';
-    document.getElementById('day-plan-text').innerHTML=`<span class="tag" style="background:${GRP_COLORS[plan.grp]}22;color:${GRP_COLORS[plan.grp]}">${plan.grp}</span>`;
+    document.getElementById('day-plan-text').innerHTML=plan.grp.split(',').map(g=>`<span class="tag" style="background:${GRP_COLORS[g.trim()]}22;color:${GRP_COLORS[g.trim()]};margin-right:6px">${g.trim()}</span>`).join('');
   }else{
     planBox.style.display='none';
   }
@@ -475,18 +475,16 @@ function openDay(date){
 async function confirmPlan(){
   const plan=weekPlans[selectedDate];
   if(!plan)return;
-  grp=plan.grp;renderG();renderE();
+  const firstGrp=plan.grp.split(',')[0].trim();
+  grp=firstGrp;renderG();renderE();
   document.getElementById('esel').value=(DEF[grp]||[])[0]||'';
   updPrev();
-  // Označ plán jako potvrzený (zůstane v historii ale skryje se z dne po zapsání)
-  await sb.from('week_plans').update({confirmed:true}).eq('date',selectedDate);
   openTrainSheet();
 }
 
 function editPlan(){
-  // Otevři normální zápis s předvyplněnou partií
   const plan=weekPlans[selectedDate];
-  if(plan){grp=plan.grp;renderG();renderE();}
+  if(plan){grp=plan.grp.split(',')[0].trim();renderG();renderE();}
   openTrainSheet();
 }
 
@@ -862,7 +860,7 @@ async function planWeek(){
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
       body:JSON.stringify({model:'groq/compound',messages:[
-        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Sestav plán na volné dny v týdnu. Odpověz POUZE JSON polem, bez textu okolo, formát: [{"date":"DD.MM.YYYY","grp":"partie"}]. Partie musí být přesně jedna z: Záda, Hrudník, Nohy, Ramena, Biceps, Triceps, Břicho. Vynech dny co už mají trénink nebo volno. Střídej partie rovnoměrně, respektuj rest dny (max 2-3 tréninkové dny v kuse).'},
+        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Sestav plán na volné dny v týdnu. Uživatel obvykle trénuje DVĚ partie na den — jeden velký sval (Záda/Hrudník/Nohy) a jeden menší (Biceps/Triceps/Ramena/Břicho). Odpověz POUZE JSON polem, bez textu okolo, formát: [{"date":"DD.MM.YYYY","grp":"Partie1,Partie2"}]. Partie musí být přesně z: Záda, Hrudník, Nohy, Ramena, Biceps, Triceps, Břicho. Logické páry: Záda+Biceps, Hrudník+Triceps, Nohy+Ramena nebo Nohy+Břicho. Vynech dny co už mají trénink nebo volno. Střídej partie rovnoměrně přes týden, respektuj rest dny (max 2-3 tréninkové dny v kuse).'},
         {role:'user',content:'PARTIE:\n'+grpS+'\n\nDNY TÝDNE:\n'+daysInfo+'\n\nNaplánuj volné dny.'}
       ],max_tokens:400,temperature:0.3})
     });
