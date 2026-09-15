@@ -149,6 +149,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .pb-b{flex:1;background:var(--accent);border-radius:3px 3px 0 0;min-height:3px;opacity:.5}
 .pb-b:last-child{opacity:1}
 
+/* BODY MAP */
+.body-hs{cursor:pointer;transition:opacity .15s}
+.body-hs:hover{opacity:.8}
+.body-hs:active{opacity:.6}
+
 /* TOAST */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0a0a0a;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 .toast.show{opacity:1}
@@ -204,9 +209,101 @@ select.inp{appearance:none;cursor:pointer}
 </div>
 
 <!-- PROG VIEW -->
-<div id="view-prog" style="flex:1;display:none;flex-direction:column;min-height:0">
-  <div class="sub-area">
-    <div id="prog-list"></div>
+<div id="view-prog" style="flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden">
+  <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:8px 16px">
+    <!-- BODY MAP -->
+    <div style="flex:1;position:relative;min-height:0;display:flex;align-items:center;justify-content:center">
+      <svg id="body-svg" viewBox="0 0 200 420" style="height:100%;max-height:100%;width:auto">
+        <!-- HEAD -->
+        <circle cx="100" cy="28" r="22" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+
+        <!-- NECK -->
+        <rect x="92" y="48" width="16" height="14" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+
+        <!-- TORSO -->
+        <path d="M65,62 Q60,62 55,68 L45,110 Q42,120 45,125 L155,125 Q158,120 155,110 L145,68 Q140,62 135,62 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+
+        <!-- HRUDNÍK hotspot -->
+        <g id="hs-Hrudník" class="body-hs" onclick="showBodyPart('Hrudník')">
+          <ellipse cx="100" cy="85" rx="28" ry="18" fill="#42b8f522" stroke="#42b8f5" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="100" y="80" text-anchor="middle" fill="#42b8f5" font-size="8" font-family="Bebas Neue" letter-spacing="0.5">HRUDNÍK</text>
+          <text id="lb-Hrudník" x="100" y="91" text-anchor="middle" fill="#e0e0e0" font-size="9" font-family="DM Sans" font-weight="500">—</text>
+        </g>
+
+        <!-- ZÁDA hotspot (na zádech — zobrazeno jako label) -->
+        <g id="hs-Záda" class="body-hs" onclick="showBodyPart('Záda')">
+          <ellipse cx="100" cy="110" rx="22" ry="10" fill="#c8f54222" stroke="#c8f542" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="100" y="107" text-anchor="middle" fill="#c8f542" font-size="7" font-family="Bebas Neue" letter-spacing="0.5">ZÁDA</text>
+          <text id="lb-Záda" x="100" y="117" text-anchor="middle" fill="#e0e0e0" font-size="9" font-family="DM Sans" font-weight="500">—</text>
+        </g>
+
+        <!-- LEFT ARM -->
+        <path d="M55,68 Q48,70 44,80 L36,120 Q34,128 38,132 L46,130 Q48,125 50,118 L56,80 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+        <!-- RIGHT ARM -->
+        <path d="M145,68 Q152,70 156,80 L164,120 Q166,128 162,132 L154,130 Q152,125 150,118 L144,80 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+
+        <!-- RAMENA -->
+        <g id="hs-Ramena" class="body-hs" onclick="showBodyPart('Ramena')">
+          <ellipse cx="58" cy="72" rx="12" ry="8" fill="#f542c822" stroke="#f542c8" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <ellipse cx="142" cy="72" rx="12" ry="8" fill="#f542c822" stroke="#f542c8" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <text id="lb-Ramena" x="100" y="72" text-anchor="middle" fill="#f542c8" font-size="8" font-family="Bebas Neue" letter-spacing="0.5">RAM</text>
+        </g>
+
+        <!-- BICEPS left -->
+        <g id="hs-Biceps" class="body-hs" onclick="showBodyPart('Biceps')">
+          <ellipse cx="44" cy="100" rx="9" ry="12" fill="#42f5a122" stroke="#42f5a1" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <ellipse cx="156" cy="100" rx="9" ry="12" fill="#42f5a122" stroke="#42f5a1" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <text id="lb-Biceps" x="18" y="103" text-anchor="middle" fill="#42f5a1" font-size="7" font-family="Bebas Neue">BIC</text>
+        </g>
+
+        <!-- TRICEPS right -->
+        <g id="hs-Triceps" class="body-hs" onclick="showBodyPart('Triceps')">
+          <ellipse cx="160" cy="115" rx="9" ry="10" fill="#f5f54222" stroke="#f5f542" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <ellipse cx="40" cy="115" rx="9" ry="10" fill="#f5f54222" stroke="#f5f542" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <text id="lb-Triceps" x="182" y="118" text-anchor="middle" fill="#f5f542" font-size="7" font-family="Bebas Neue">TRI</text>
+        </g>
+
+        <!-- HIPS/WAIST -->
+        <path d="M45,125 L45,155 Q45,165 55,168 L145,168 Q155,165 155,155 L155,125 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+
+        <!-- BŘICHO -->
+        <g id="hs-Břicho" class="body-hs" onclick="showBodyPart('Břicho')">
+          <ellipse cx="100" cy="143" rx="18" ry="14" fill="#f5424222" stroke="#f54242" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <text x="100" y="140" text-anchor="middle" fill="#f54242" font-size="7" font-family="Bebas Neue" letter-spacing="0.5">BŘICHO</text>
+          <text id="lb-Břicho" x="100" y="151" text-anchor="middle" fill="#e0e0e0" font-size="9" font-family="DM Sans" font-weight="500">—</text>
+        </g>
+
+        <!-- LEFT LEG -->
+        <path d="M55,168 L50,270 Q49,280 55,282 L75,282 Q80,280 80,270 L82,168 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+        <!-- RIGHT LEG -->
+        <path d="M145,168 L150,270 Q151,280 145,282 L125,282 Q120,280 120,270 L118,168 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+
+        <!-- CALVES -->
+        <path d="M50,282 L48,340 Q48,350 55,352 L72,352 Q78,350 78,340 L75,282 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+        <path d="M150,282 L152,340 Q152,350 145,352 L128,352 Q122,350 122,340 L125,282 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+
+        <!-- FEET -->
+        <ellipse cx="63" cy="356" rx="16" ry="7" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+        <ellipse cx="137" cy="356" rx="16" ry="7" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+
+        <!-- NOHY hotspot -->
+        <g id="hs-Nohy" class="body-hs" onclick="showBodyPart('Nohy')">
+          <ellipse cx="65" cy="225" rx="18" ry="30" fill="#f5a14222" stroke="#f5a142" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <ellipse cx="135" cy="225" rx="18" ry="30" fill="#f5a14222" stroke="#f5a142" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <text x="100" y="222" text-anchor="middle" fill="#f5a142" font-size="8" font-family="Bebas Neue" letter-spacing="0.5">NOHY</text>
+          <text id="lb-Nohy" x="100" y="233" text-anchor="middle" fill="#e0e0e0" font-size="9" font-family="DM Sans" font-weight="500">—</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- DETAIL POPUP -->
+    <div id="body-detail" style="display:none;background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:14px;flex-shrink:0;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div id="bd-title" style="font-family:'Bebas Neue';font-size:18px;letter-spacing:1px"></div>
+        <button onclick="document.getElementById('body-detail').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">×</button>
+      </div>
+      <div id="bd-content"></div>
+    </div>
   </div>
 </div>
 
@@ -634,36 +731,76 @@ async function editSet(id,field,val){
   showToast('✓ Upraveno');
 }
 
-// PROGRESS
+// PROGRESS — BODY MAP
 function renderProg(){
-  const map={};
-  sessions.forEach(s=>{const k=s.grp+'|'+s.ex;if(!map[k])map[k]=[];map[k].push({date:s.date,mx:s.weight||0,ts:new Date(s.created_at||0).getTime()});});
-  const l=document.getElementById('prog-list');
-  if(!Object.keys(map).length){l.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Zatím žádná data</div>';return;}
-  const grouped={};
-  sessions.forEach(s=>{const k=s.grp+'|'+s.ex+'|'+s.date;if(!grouped[k])grouped[k]={k:s.grp+'|'+s.ex,date:s.date,mx:0,ts:new Date(s.created_at||0).getTime()};if((s.weight||0)>grouped[k].mx)grouped[k].mx=s.weight||0;});
-  l.innerHTML=Object.keys(map).map(k=>{
-    const[g,ex]=k.split('|');
-    const data=Object.values(grouped).filter(d=>d.k===k).sort((a,b)=>a.ts-b.ts);
-    if(!data.length)return'';
-    const mxe=Math.max(...data.map(d=>d.mx));
-    const last=data[data.length-1];
-    const imp=last.mx-data[0].mx;
-    const bm=mxe||1;
-    const bars=data.slice(-8).map(d=>`<div class="pb-b" style="height:${Math.max(3,Math.round((d.mx/bm)*36))}px"></div>`).join('');
-    return `<div style="padding:12px 0;border-bottom:1px solid var(--b1)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div><span class="tag">${g}</span><span style="font-size:14px;font-weight:500;margin-left:8px">${ex}</span></div>
-        ${imp>0?`<span style="font-size:11px;color:var(--accent)">+${imp}kg ↑</span>`:''}
+  // Aktualizuj čísla na SVG postavě
+  const GRP_ALL=['Záda','Hrudník','Nohy','Ramena','Biceps','Triceps','Břicho'];
+  GRP_ALL.forEach(grp=>{
+    const grpSessions=sessions.filter(s=>s.grp===grp&&s.weight>0);
+    const el=document.getElementById('lb-'+grp);
+    if(!el)return;
+    if(!grpSessions.length){el.textContent='—';return;}
+    const mx=Math.max(...grpSessions.map(s=>s.weight||0));
+    el.textContent=mx+'kg';
+  });
+}
+
+function showBodyPart(grp){
+  const grpSessions=sessions.filter(s=>s.grp===grp&&s.weight>0);
+  const detail=document.getElementById('body-detail');
+  const title=document.getElementById('bd-title');
+  const cont=document.getElementById('bd-content');
+  const colors={Záda:'#c8f542',Hrudník:'#42b8f5',Nohy:'#f5a142',Ramena:'#f542c8',Biceps:'#42f5a1',Triceps:'#f5f542',Břicho:'#f54242'};
+  title.style.color=colors[grp]||'var(--accent)';
+  title.textContent=grp.toUpperCase();
+
+  if(!grpSessions.length){
+    cont.innerHTML='<div style="color:var(--muted);font-size:13px">Žádné záznamy pro tuto partii</div>';
+    detail.style.display='block';return;
+  }
+
+  // Max ever
+  const mx=Math.max(...grpSessions.map(s=>s.weight||0));
+
+  // Last session
+  const lastDate=grpSessions[0].date;
+  const lastS=grpSessions.filter(s=>s.date===lastDate);
+  const lastMx=Math.max(...lastS.map(s=>s.weight||0));
+  const lastReps=lastS.find(s=>s.weight===lastMx)?.reps||0;
+
+  // Suggested next (5% increase)
+  const suggested=Math.round(lastMx*1.05*2)/2;
+
+  // Group by exercise
+  const byEx={};
+  grpSessions.forEach(s=>{if(!byEx[s.ex])byEx[s.ex]={mx:0,count:0,lastW:0};if(s.weight>byEx[s.ex].mx)byEx[s.ex].mx=s.weight;byEx[s.ex].count++;byEx[s.ex].lastW=s.weight;});
+
+  cont.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+      <div style="background:var(--s2);border-radius:8px;padding:10px 8px;text-align:center">
+        <div style="font-family:'Bebas Neue';font-size:24px;color:${colors[grp]}">${mx}kg</div>
+        <div style="font-size:10px;color:var(--muted)">MAXIMUM</div>
       </div>
-      <div class="pb-bar">${bars}</div>
-      <div style="display:flex;gap:12px;margin-top:4px;font-size:11px;color:var(--muted)">
-        <span>Max: <strong style="color:var(--accent)">${mxe}kg</strong></span>
-        <span>Poslední: <strong style="color:var(--accent)">${last.mx}kg</strong></span>
-        <span>${data.length}× trénink</span>
+      <div style="background:var(--s2);border-radius:8px;padding:10px 8px;text-align:center">
+        <div style="font-family:'Bebas Neue';font-size:24px;color:var(--text)">${lastMx}kg</div>
+        <div style="font-size:10px;color:var(--muted)">NAPOSLEDY</div>
       </div>
-    </div>`;
-  }).join('');
+      <div style="background:var(--abg);border-radius:8px;padding:10px 8px;text-align:center;border:1px solid #2d3d00">
+        <div style="font-family:'Bebas Neue';font-size:24px;color:var(--accent)">${suggested}kg</div>
+        <div style="font-size:10px;color:var(--muted)">PŘÍŠTĚ ZKUS</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.5px">CVIKY</div>
+    ${Object.entries(byEx).map(([ex,d])=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--b1)">
+        <span style="font-size:13px">${ex}</span>
+        <div style="text-align:right">
+          <span style="font-size:13px;color:${colors[grp]};font-weight:500">${d.mx}kg</span>
+          <span style="font-size:11px;color:var(--muted);margin-left:6px">${d.count}× sérií</span>
+        </div>
+      </div>`).join('')}
+  `;
+  detail.style.display='block';
 }
 
 // AI CHAT
