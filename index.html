@@ -853,22 +853,47 @@ async function planWeek(){
       days.push({date:dstr,dow:DAYS[d.getDay()],hasTrain,hasRest});
     }
 
-    const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+' dnů').join('\n');
+    const today0=new Date();today0.setHours(0,0,0,0);
+    const grpS=Object.entries(gld).map(([g,d])=>{
+      const[dd,mm,yy]=d.split('.').map(x=>parseInt(x));
+      const lastDate=new Date(yy,mm-1,dd);
+      const daysAgo=Math.round((today0-lastDate)/(24*60*60*1000));
+      return g+': naposledy před '+daysAgo+' dny ('+d+'), celkem '+(gc[g]||0)+' dnů';
+    }).join('\n');
     const daysInfo=days.map(d=>d.date+' ('+d.dow+')'+(d.hasTrain?' - už má trénink':d.hasRest?' - volno':' - volný den')).join('\n');
 
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
       body:JSON.stringify({model:'groq/compound',messages:[
-        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Sestav plán na volné dny v týdnu. Uživatel obvykle trénuje DVĚ partie na den — jeden velký sval (Záda/Hrudník/Nohy) a jeden menší (Biceps/Triceps/Ramena/Břicho). Odpověz POUZE JSON polem, bez textu okolo, formát: [{"date":"DD.MM.YYYY","grp":"Partie1,Partie2"}]. Partie musí být přesně z: Záda, Hrudník, Nohy, Ramena, Biceps, Triceps, Břicho. Logické páry: Záda+Biceps, Hrudník+Triceps, Nohy+Ramena nebo Nohy+Břicho. Vynech dny co už mají trénink nebo volno. Střídej partie rovnoměrně přes týden, respektuj rest dny (max 2-3 tréninkové dny v kuse).'},
-        {role:'user',content:'PARTIE:\n'+grpS+'\n\nDNY TÝDNE:\n'+daysInfo+'\n\nNaplánuj volné dny.'}
+        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Sestav plán na volné dny v týdnu. Uživatel obvykle trénuje DVĚ partie na den — jeden velký sval (Záda/Hrudník/Nohy) a jeden menší (Biceps/Triceps/Ramena/Břicho). DŮLEŽITÉ PRAVIDLO: stejná partie potřebuje MINIMÁLNĚ 2-3 dny odpočinku mezi tréninky — nikdy nenavrhuj partii co byla trénovaná před méně než 2 dny, a v rámci plánovaného týdne nikdy neopakuj stejnou partii dřív než po 3 dnech od předchozího naplánovaného dne se stejnou partií. Odpověz POUZE JSON polem, bez textu okolo, formát: [{"date":"DD.MM.YYYY","grp":"Partie1,Partie2"}]. Partie musí být přesně z: Záda, Hrudník, Nohy, Ramena, Biceps, Triceps, Břicho. Logické páry: Záda+Biceps, Hrudník+Triceps, Nohy+Ramena nebo Nohy+Břicho. Vynech dny co už mají trénink nebo volno.'},
+        {role:'user',content:'STAV PARTIÍ (kolik dní zpět naposledy trénováno):\n'+grpS+'\n\nDNY TÝDNE:\n'+daysInfo+'\n\nNaplánuj volné dny. Nezapomeň: partie trénovaná před méně než 2 dny se NESMÍ opakovat.'}
       ],max_tokens:400,temperature:0.3})
     });
     if(!r.ok)throw new Error(await r.text());
     const data=await r.json();
     const raw=data.choices?.[0]?.message?.content||'[]';
     const jsonMatch=raw.match(/\[[\s\S]*\]/);
-    const plan=JSON.parse(jsonMatch?jsonMatch[0]:'[]');
+    let plan=JSON.parse(jsonMatch?jsonMatch[0]:'[]');
+
+    // Bezpečnostní filtr — over že žádná partie není naplánovaná dřív než 2 dny po posledním tréninku
+    const parseDate=s=>{const[dd,mm,yy]=s.split('.').map(x=>parseInt(x));return new Date(yy,mm-1,dd);};
+    const usedGrpDates={}; // partie -> poslední naplánované/trénované datum v tomto běhu
+    Object.entries(gld).forEach(([g,d])=>{usedGrpDates[g]=parseDate(d);});
+
+    plan=plan.filter(p=>{
+      const pd=parseDate(p.date);
+      const grps=p.grp.split(',').map(g=>g.trim());
+      for(const g of grps){
+        if(usedGrpDates[g]){
+          const diffDays=Math.round((pd-usedGrpDates[g])/(24*60*60*1000));
+          if(diffDays<2)return false; // moc brzy, zahoď tento den
+        }
+      }
+      // Aktualizuj poslední datum pro tyto partie
+      grps.forEach(g=>{usedGrpDates[g]=pd;});
+      return true;
+    });
 
     // Ulož plán do Supabase
     for(const p of plan){
@@ -879,7 +904,7 @@ async function planWeek(){
 
     res.textContent=plan.length?
       'Naplánováno: '+plan.map(p=>p.date+' — '+p.grp).join(', ')+'. Uvidíš to v týdenním přehledu.':
-      'Všechny dny už mají trénink nebo volno naplánované.';
+      'Žádný den nesplňuje podmínku odpočinku partií — zkus to příští týden.';
   }catch(e){
     res.textContent='Chyba plánování: '+e.message;
   }
