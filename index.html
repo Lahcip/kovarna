@@ -210,166 +210,397 @@ select.inp{appearance:none;cursor:pointer}
 
 <!-- PROG VIEW -->
 <div id="view-prog" style="flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden">
-  <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:8px 12px 0">
+  <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:6px 10px 0">
 
-    <div style="flex:1;display:flex;gap:12px;min-height:0;align-items:center;justify-content:center">
+    <div style="flex:1;display:flex;gap:10px;min-height:0;align-items:flex-start">
 
       <!-- PŘEDNÍ POHLED -->
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-height:0">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'Bebas Neue'">PŘEDNÍ</div>
-        <svg id="svg-front" viewBox="0 0 200 480" style="width:100%;height:auto;max-height:100%;flex:1">
-          <g fill="#252525" stroke="#333" stroke-width="0.5">
-            <ellipse cx="100" cy="22" rx="18" ry="21"/>
-            <rect x="93" y="40" width="14" height="12" rx="4"/>
-            <path d="M55,52 Q45,50 38,56 Q32,62 33,70 L48,68 Q55,64 60,58 L140,58 Q145,64 152,68 L167,70 Q168,62 162,56 Q155,50 145,52 L100,48 Z"/>
-            <path d="M60,58 L55,95 Q57,105 65,107 L88,103 Q96,100 97,92 L98,65 Q85,60 60,58Z"/>
-            <path d="M140,58 L145,95 Q143,105 135,107 L112,103 Q104,100 103,92 L102,65 Q115,60 140,58Z"/>
-            <rect x="97" y="58" width="6" height="48" rx="2" fill="#1f1f1f"/>
-            <rect x="87" y="110" width="11" height="13" rx="3"/>
-            <rect x="102" y="110" width="11" height="13" rx="3"/>
-            <rect x="87" y="127" width="11" height="13" rx="3"/>
-            <rect x="102" y="127" width="11" height="13" rx="3"/>
-            <rect x="87" y="144" width="11" height="11" rx="3"/>
-            <rect x="102" y="144" width="11" height="11" rx="3"/>
-            <path d="M77,112 Q72,125 75,145 L87,145 L87,110 Z"/>
-            <path d="M123,112 Q128,125 125,145 L113,145 L113,110 Z"/>
-            <ellipse cx="42" cy="65" rx="16" ry="14"/>
-            <ellipse cx="158" cy="65" rx="16" ry="14"/>
-            <path d="M29,76 Q22,80 20,95 Q19,110 23,118 L33,116 Q36,108 37,94 Q37,82 33,76 Z"/>
-            <path d="M171,76 Q178,80 180,95 Q181,110 177,118 L167,116 Q164,108 163,94 Q163,82 167,76 Z"/>
-            <path d="M23,118 Q18,125 17,145 Q17,158 22,163 L31,161 Q35,155 35,143 Q35,128 33,116 Z"/>
-            <path d="M177,118 Q182,125 183,145 Q183,158 178,163 L169,161 Q165,155 165,143 Q165,128 167,116 Z"/>
-            <ellipse cx="20" cy="167" rx="7" ry="9"/>
-            <ellipse cx="180" cy="167" rx="7" ry="9"/>
-            <path d="M77,155 Q74,165 76,175 L124,175 Q126,165 123,155 Z"/>
-            <path d="M73,175 Q65,178 62,188 L65,205 L135,205 L138,188 Q135,178 127,175 Z"/>
-            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z"/>
-            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z"/>
-            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z"/>
-            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z"/>
-            <ellipse cx="72" cy="372" rx="17" ry="8"/>
-            <ellipse cx="128" cy="372" rx="17" ry="8"/>
-          </g>
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;font-family:Bebas Neue">PŘEDNÍ</div>
+        <svg viewBox="0 0 200 480" style="width:100%;height:auto">
+          <defs><style>.base{fill:#1e1e1e;stroke:#444;stroke-width:0.6}.line{fill:none;stroke:#555;stroke-width:0.8}</style></defs>
+          <defs>
+  <style>
+    .base{fill:#1e1e1e;stroke:#444;stroke-width:0.6}
+    .line{fill:none;stroke:#555;stroke-width:0.8}
+    .muscle{stroke:none}
+  </style>
+</defs>
 
-          <!-- MUSCLE OVERLAYS FRONT -->
-          <g id="f-Hrudník" opacity="0" style="cursor:pointer" onclick="showBodyPart('Hrudník')">
-            <path d="M60,58 L55,95 Q57,105 65,107 L88,103 Q96,100 97,92 L98,65 Q85,60 60,58Z" fill="#42b8f5"/>
-            <path d="M140,58 L145,95 Q143,105 135,107 L112,103 Q104,100 103,92 L102,65 Q115,60 140,58Z" fill="#42b8f5"/>
-            <path d="M70,65 Q75,85 78,103" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
-            <path d="M80,62 Q82,82 83,103" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
-            <path d="M130,65 Q125,85 122,103" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
-          </g>
-          <g id="f-Ramena" opacity="0" style="cursor:pointer" onclick="showBodyPart('Ramena')">
-            <ellipse cx="42" cy="65" rx="16" ry="14" fill="#f542c8"/>
-            <ellipse cx="158" cy="65" rx="16" ry="14" fill="#f542c8"/>
-          </g>
-          <g id="f-Biceps" opacity="0" style="cursor:pointer" onclick="showBodyPart('Biceps')">
-            <path d="M29,76 Q22,80 20,95 Q19,110 23,118 L33,116 Q36,108 37,94 Q37,82 33,76 Z" fill="#42f5a1"/>
-            <path d="M171,76 Q178,80 180,95 Q181,110 177,118 L167,116 Q164,108 163,94 Q163,82 167,76 Z" fill="#42f5a1"/>
-          </g>
-          <g id="f-Triceps" opacity="0" style="cursor:pointer" onclick="showBodyPart('Triceps')">
-            <path d="M28,80 Q21,85 19,100 Q18,114 22,120 L29,118 Q32,112 33,100 Q33,86 29,80 Z" fill="#f5f542"/>
-            <path d="M172,80 Q179,85 181,100 Q182,114 178,120 L171,118 Q168,112 167,100 Q167,86 171,80 Z" fill="#f5f542"/>
-          </g>
-          <g id="f-Břicho" opacity="0" style="cursor:pointer" onclick="showBodyPart('Břicho')">
-            <rect x="87" y="110" width="11" height="13" rx="3" fill="#f54242"/>
-            <rect x="102" y="110" width="11" height="13" rx="3" fill="#f54242"/>
-            <rect x="87" y="127" width="11" height="13" rx="3" fill="#f54242"/>
-            <rect x="102" y="127" width="11" height="13" rx="3" fill="#f54242"/>
-            <rect x="87" y="144" width="11" height="11" rx="3" fill="#f54242"/>
-            <rect x="102" y="144" width="11" height="11" rx="3" fill="#f54242"/>
-            <path d="M77,112 Q72,125 75,145 L87,145 L87,110 Z" fill="#f54242" opacity="0.6"/>
-            <path d="M123,112 Q128,125 125,145 L113,145 L113,110 Z" fill="#f54242" opacity="0.6"/>
-          </g>
-          <g id="f-Nohy" opacity="0" style="cursor:pointer" onclick="showBodyPart('Nohy')">
-            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z" fill="#f5a142"/>
-            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z" fill="#f5a142"/>
-            <path d="M80,210 L78,275" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
-            <path d="M120,210 L122,275" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
-            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z" fill="#f5a142" opacity="0.6"/>
-            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z" fill="#f5a142" opacity="0.6"/>
-          </g>
-          <g id="f-Záda" opacity="0" style="cursor:pointer" onclick="showBodyPart('Záda')">
-            <path d="M55,52 Q45,50 38,56 Q32,62 33,70 L48,68 Q55,64 60,58 L100,53 L140,58 Q145,64 152,68 L167,70 Q168,62 162,56 Q155,50 145,52 L100,48 Z" fill="#c8f542"/>
-          </g>
+<!-- HEAD -->
+<ellipse class="base" cx="100" cy="22" rx="19" ry="22"/>
+<!-- EAR nubs -->
+<ellipse class="base" cx="81" cy="23" rx="4" ry="5"/>
+<ellipse class="base" cx="119" cy="23" rx="4" ry="5"/>
 
-          <!-- LABELS FRONT -->
-          <text x="100" y="83" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" id="flb-Hrudník" opacity="0">— kg</text>
-          <text x="100" y="133" text-anchor="middle" fill="white" font-size="6" font-family="Bebas Neue" pointer-events="none" id="flb-Břicho" opacity="0">— kg</text>
-          <text x="100" y="245" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" id="flb-Nohy" opacity="0">— kg</text>
-          <text x="14" y="100" text-anchor="middle" fill="white" font-size="6" font-family="Bebas Neue" pointer-events="none" id="flb-Biceps" opacity="0">—</text>
+<!-- NECK -->
+<path class="base" d="M91,41 Q91,50 93,52 L107,52 Q109,50 109,41 Q104,39 96,41 Z"/>
+<!-- neck muscle lines -->
+<path class="line" d="M94,42 L95,52"/>
+<path class="line" d="M106,42 L105,52"/>
+
+<!-- TRAPEZIUS top -->
+<path class="base" d="M93,52 Q70,52 52,60 Q40,65 37,74 L48,72 Q58,66 70,62 L93,58 Z"/>
+<path class="base" d="M107,52 Q130,52 148,60 Q160,65 163,74 L152,72 Q142,66 130,62 L107,58 Z"/>
+<!-- trap lines -->
+<path class="line" d="M93,54 Q78,57 62,64"/>
+<path class="line" d="M107,54 Q122,57 138,64"/>
+
+<!-- ANTERIOR DELTOID L -->
+<path class="base" d="M37,74 Q28,72 24,80 Q20,88 24,98 Q28,106 36,108 L46,100 Q50,92 50,82 Q46,76 37,74 Z"/>
+<!-- ANTERIOR DELTOID R -->
+<path class="base" d="M163,74 Q172,72 176,80 Q180,88 176,98 Q172,106 164,108 L154,100 Q150,92 150,82 Q154,76 163,74 Z"/>
+<!-- deltoid lines -->
+<path class="line" d="M30,80 Q32,90 34,104"/>
+<path class="line" d="M170,80 Q168,90 166,104"/>
+
+<!-- PECTORALIS MAJOR L -->
+<path class="base" d="M52,60 Q47,64 46,72 L44,100 Q47,112 56,116 L85,116 Q95,112 97,100 L98,66 Q80,58 52,60 Z"/>
+<!-- PECTORALIS MAJOR R -->
+<path class="base" d="M148,60 Q153,64 154,72 L156,100 Q153,112 144,116 L115,116 Q105,112 103,100 L102,66 Q120,58 148,60 Z"/>
+<!-- pec lines -->
+<path class="line" d="M60,64 Q65,88 68,114"/>
+<path class="line" d="M72,62 Q74,86 75,115"/>
+<path class="line" d="M84,61 Q84,85 84,115"/>
+<path class="line" d="M140,64 Q135,88 132,114"/>
+<path class="line" d="M128,62 Q126,86 125,115"/>
+<path class="line" d="M116,61 Q116,85 116,115"/>
+<!-- pec center divide -->
+<path class="line" d="M97,66 L97,116"/>
+<path class="line" d="M103,66 L103,116"/>
+
+<!-- BICEPS BRACHII L -->
+<path class="base" d="M24,98 Q16,102 13,115 Q11,128 14,140 Q18,150 26,152 L36,148 Q42,140 42,126 Q42,112 36,108 L46,100 Q38,96 24,98 Z"/>
+<!-- BICEPS R -->
+<path class="base" d="M176,98 Q184,102 187,115 Q189,128 186,140 Q182,150 174,152 L164,148 Q158,140 158,126 Q158,112 164,108 L154,100 Q162,96 176,98 Z"/>
+<!-- bicep lines -->
+<path class="line" d="M18,108 Q20,125 22,146"/>
+<path class="line" d="M182,108 Q180,125 178,146"/>
+
+<!-- FOREARM L -->
+<path class="base" d="M14,140 Q9,148 8,162 Q7,175 10,183 L19,184 Q24,178 26,165 Q28,152 26,152 L36,148 Q28,142 14,140 Z"/>
+<!-- FOREARM R -->
+<path class="base" d="M186,140 Q191,148 192,162 Q193,175 190,183 L181,184 Q176,178 174,165 Q172,152 174,152 L164,148 Q172,142 186,140 Z"/>
+<!-- forearm lines -->
+<path class="line" d="M10,148 Q11,162 12,180"/>
+<path class="line" d="M18,148 Q19,162 20,181"/>
+<path class="line" d="M190,148 Q189,162 188,180"/>
+<path class="line" d="M182,148 Q181,162 180,181"/>
+
+<!-- HAND L -->
+<path class="base" d="M8,183 Q6,188 7,195 Q9,200 15,201 L21,200 Q25,196 25,190 L19,184 Z"/>
+<!-- HAND R -->
+<path class="base" d="M192,183 Q194,188 193,195 Q191,200 185,201 L179,200 Q175,196 175,190 L181,184 Z"/>
+
+<!-- SERRATUS ANTERIOR L -->
+<path class="base" d="M46,100 L44,130 Q44,138 50,140 L60,136 Q62,124 62,110 L56,116 Z"/>
+<!-- SERRATUS R -->
+<path class="base" d="M154,100 L156,130 Q156,138 150,140 L140,136 Q138,124 138,110 L144,116 Z"/>
+<!-- serratus lines -->
+<path class="line" d="M47,106 L48,136"/>
+<path class="line" d="M52,103 L52,137"/>
+<path class="line" d="M153,106 L152,136"/>
+<path class="line" d="M148,103 L148,137"/>
+
+<!-- RECTUS ABDOMINIS — 6 pack -->
+<!-- Center line -->
+<path class="line" d="M97,116 L97,196"/>
+<path class="line" d="M103,116 L103,196"/>
+<!-- Horizontal tendinous intersections -->
+<path class="line" d="M85,132 L115,132"/>
+<path class="line" d="M84,150 L116,150"/>
+<path class="line" d="M84,168 L116,168"/>
+<path class="line" d="M84,186 L116,186"/>
+<!-- Abs outline -->
+<path class="base" d="M56,116 L52,196 Q52,204 60,206 L140,206 Q148,204 148,196 L144,116 L97,120 Z"/>
+<!-- Obliques -->
+<path class="base" d="M52,140 Q46,152 46,168 L52,196 L60,196 L56,140 Z"/>
+<path class="base" d="M148,140 Q154,152 154,168 L148,196 L140,196 L144,140 Z"/>
+<path class="line" d="M50,144 Q48,160 49,188"/>
+<path class="line" d="M150,144 Q152,160 151,188"/>
+
+<!-- ILIAC / WAIST -->
+<path class="base" d="M52,196 Q48,206 48,216 L152,216 Q152,206 148,196 Z"/>
+<!-- hip lines -->
+<path class="line" d="M72,200 Q70,210 68,216"/>
+<path class="line" d="M128,200 Q130,210 132,216"/>
+
+<!-- GROIN / HIP flexor -->
+<path class="base" d="M48,216 Q44,224 44,236 L68,238 Q74,230 76,218 Z"/>
+<path class="base" d="M152,216 Q156,224 156,236 L132,238 Q126,230 124,218 Z"/>
+
+<!-- RECTUS FEMORIS / QUADS L -->
+<path class="base" d="M44,236 L38,320 Q37,334 44,338 L72,338 Q80,334 80,320 L76,236 Z"/>
+<!-- quad inner detail -->
+<path class="line" d="M48,240 L44,332"/>
+<path class="line" d="M58,238 L56,334"/>
+<path class="line" d="M66,237 L66,334"/>
+<path class="line" d="M73,238 L74,332"/>
+<!-- QUADS R -->
+<path class="base" d="M156,236 L162,320 Q163,334 156,338 L128,338 Q120,334 120,320 L124,236 Z"/>
+<path class="line" d="M152,240 L156,332"/>
+<path class="line" d="M142,238 L144,334"/>
+<path class="line" d="M134,237 L134,334"/>
+<path class="line" d="M127,238 L126,332"/>
+
+<!-- KNEE L -->
+<path class="base" d="M38,334 Q36,342 38,350 L58,352 Q66,350 72,344 Q78,338 80,334 L72,338 Z"/>
+<!-- KNEE R -->
+<path class="base" d="M162,334 Q164,342 162,350 L142,352 Q134,350 128,344 Q122,338 120,334 L128,338 Z"/>
+
+<!-- TIBIALIS / CALF L -->
+<path class="base" d="M38,350 Q32,360 30,376 Q29,392 34,402 L48,406 Q55,402 58,390 Q62,374 60,360 L58,352 Z"/>
+<!-- Calf inner L -->
+<path class="base" d="M58,352 Q66,358 68,372 Q70,388 66,402 L52,406 L48,406 Q55,402 58,390 Q62,374 60,360 Z"/>
+<!-- TIBIALIS / CALF R -->
+<path class="base" d="M162,350 Q168,360 170,376 Q171,392 166,402 L152,406 Q145,402 142,390 Q138,374 140,360 L142,352 Z"/>
+<!-- Calf inner R -->
+<path class="base" d="M142,352 Q134,358 132,372 Q130,388 134,402 L148,406 L152,406 Q145,402 142,390 Q138,374 140,360 Z"/>
+<!-- calf lines -->
+<path class="line" d="M36,358 Q35,376 36,396"/>
+<path class="line" d="M50,356 Q52,374 52,400"/>
+<path class="line" d="M164,358 Q165,376 164,396"/>
+<path class="line" d="M150,356 Q148,374 148,400"/>
+
+<!-- ANKLE / FOOT L -->
+<path class="base" d="M30,400 Q28,408 30,414 L58,416 Q64,414 66,408 Q68,402 66,402 L34,402 Z"/>
+<path class="base" d="M28,414 Q26,420 30,424 Q36,428 60,428 Q72,426 74,420 L62,416 Z"/>
+<!-- ANKLE / FOOT R -->
+<path class="base" d="M170,400 Q172,408 170,414 L142,416 Q136,414 134,408 Q132,402 134,402 L166,402 Z"/>
+<path class="base" d="M172,414 Q174,420 170,424 Q164,428 140,428 Q128,426 126,420 L138,416 Z"/>
+          
+  <!-- MUSCLE OVERLAYS FRONT — colored layers on top -->
+  <!-- Hrudník -->
+  <g id="f-Hrudník" opacity="0" class="body-hs" onclick="showBodyPart('Hrudník')" style="cursor:pointer">
+    <path d="M52,60 Q47,64 46,72 L44,100 Q47,112 56,116 L85,116 Q95,112 97,100 L98,66 Q80,58 52,60Z" fill="#42b8f5"/>
+    <path d="M148,60 Q153,64 154,72 L156,100 Q153,112 144,116 L115,116 Q105,112 103,100 L102,66 Q120,58 148,60Z" fill="#42b8f5"/>
+  </g>
+  <!-- Ramena -->
+  <g id="f-Ramena" opacity="0" class="body-hs" onclick="showBodyPart('Ramena')" style="cursor:pointer">
+    <path d="M37,74 Q28,72 24,80 Q20,88 24,98 Q28,106 36,108 L46,100 Q50,92 50,82 Q46,76 37,74 Z" fill="#f542c8"/>
+    <path d="M163,74 Q172,72 176,80 Q180,88 176,98 Q172,106 164,108 L154,100 Q150,92 150,82 Q154,76 163,74 Z" fill="#f542c8"/>
+  </g>
+  <!-- Biceps -->
+  <g id="f-Biceps" opacity="0" class="body-hs" onclick="showBodyPart('Biceps')" style="cursor:pointer">
+    <path d="M24,98 Q16,102 13,115 Q11,128 14,140 Q18,150 26,152 L36,148 Q42,140 42,126 Q42,112 36,108 L46,100 Q38,96 24,98 Z" fill="#42f5a1"/>
+    <path d="M176,98 Q184,102 187,115 Q189,128 186,140 Q182,150 174,152 L164,148 Q158,140 158,126 Q158,112 164,108 L154,100 Q162,96 176,98 Z" fill="#42f5a1"/>
+  </g>
+  <!-- Triceps (visible edge on front) -->
+  <g id="f-Triceps" opacity="0" class="body-hs" onclick="showBodyPart('Triceps')" style="cursor:pointer">
+    <path d="M28,80 Q21,85 19,100 Q18,114 22,120 L29,118 Q32,112 33,100 Q33,86 29,80 Z" fill="#f5f542"/>
+    <path d="M172,80 Q179,85 181,100 Q182,114 178,120 L171,118 Q168,112 167,100 Q167,86 171,80 Z" fill="#f5f542"/>
+  </g>
+  <!-- Břicho -->
+  <g id="f-Břicho" opacity="0" class="body-hs" onclick="showBodyPart('Břicho')" style="cursor:pointer">
+    <path d="M56,116 L52,196 Q52,204 60,206 L140,206 Q148,204 148,196 L144,116 L97,120 Z" fill="#f54242"/>
+    <path d="M52,140 Q46,152 46,168 L52,196 L60,196 L56,140 Z" fill="#f54242" opacity="0.7"/>
+    <path d="M148,140 Q154,152 154,168 L148,196 L140,196 L144,140 Z" fill="#f54242" opacity="0.7"/>
+  </g>
+  <!-- Nohy přední -->
+  <g id="f-Nohy" opacity="0" class="body-hs" onclick="showBodyPart('Nohy')" style="cursor:pointer">
+    <path d="M44,236 L38,320 Q37,334 44,338 L72,338 Q80,334 80,320 L76,236 Z" fill="#f5a142"/>
+    <path d="M156,236 L162,320 Q163,334 156,338 L128,338 Q120,334 120,320 L124,236 Z" fill="#f5a142"/>
+    <path d="M38,350 Q32,360 30,376 Q29,392 34,402 L48,406 Q55,402 58,390 Q62,374 60,360 L58,352 Z" fill="#f5a142" opacity="0.7"/>
+    <path d="M58,352 Q66,358 68,372 Q70,388 66,402 L52,406 L48,406 Q55,402 58,390 Q62,374 60,360 Z" fill="#f5a142" opacity="0.6"/>
+    <path d="M162,350 Q168,360 170,376 Q171,392 166,402 L152,406 Q145,402 142,390 Q138,374 140,360 L142,352 Z" fill="#f5a142" opacity="0.7"/>
+    <path d="M142,352 Q134,358 132,372 Q130,388 134,402 L148,406 L152,406 Q145,402 142,390 Q138,374 140,360 Z" fill="#f5a142" opacity="0.6"/>
+  </g>
+  <!-- Záda (trapezius visible from front) -->
+  <g id="f-Záda" opacity="0" class="body-hs" onclick="showBodyPart('Záda')" style="cursor:pointer">
+    <path d="M93,52 Q70,52 52,60 Q40,65 37,74 L48,72 Q58,66 70,62 L93,58 Z" fill="#c8f542"/>
+    <path d="M107,52 Q130,52 148,60 Q160,65 163,74 L152,72 Q142,66 130,62 L107,58 Z" fill="#c8f542"/>
+    <path d="M93,44 L100,38 L107,44 L100,120 Z" fill="#c8f542" opacity="0.3"/>
+  </g>
+  <!-- KG LABELS -->
+  <text id="flb-Hrudník" x="100" y="92" text-anchor="middle" fill="white" font-size="8" font-family="Bebas Neue" pointer-events="none" opacity="0" font-weight="bold" text-shadow="0 1px 3px black"></text>
+  <text id="flb-Nohy" x="60" y="290" text-anchor="middle" fill="white" font-size="8" font-family="Bebas Neue" pointer-events="none" opacity="0"></text>
+  <text id="flb-Biceps" x="12" y="128" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" opacity="0"></text>
+  <text id="flb-Břicho" x="100" y="162" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" opacity="0"></text>
+
         </svg>
       </div>
 
       <!-- ZADNÍ POHLED -->
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-height:0">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'Bebas Neue'">ZADNÍ</div>
-        <svg id="svg-back" viewBox="0 0 200 480" style="width:100%;height:auto;max-height:100%;flex:1">
-          <g fill="#252525" stroke="#333" stroke-width="0.5">
-            <ellipse cx="100" cy="22" rx="18" ry="21"/>
-            <rect x="93" y="40" width="14" height="12" rx="4"/>
-            <path d="M55,52 Q45,50 38,56 Q32,62 33,70 L48,68 Q55,64 60,58 L140,58 Q145,64 152,68 L167,70 Q168,62 162,56 Q155,50 145,52 L100,48 Z"/>
-            <!-- Back torso with spine -->
-            <path d="M60,58 L55,140 Q57,148 65,150 L88,148 Q96,145 97,138 L98,65 Q85,60 60,58Z"/>
-            <path d="M140,58 L145,140 Q143,148 135,150 L112,148 Q104,145 103,138 L102,65 Q115,60 140,58Z"/>
-            <rect x="97" y="58" width="6" height="90" rx="2" fill="#1f1f1f"/>
-            <!-- Back muscle details -->
-            <path d="M65,65 Q68,90 70,130" stroke="#1f1f1f" stroke-width="2" fill="none"/>
-            <path d="M75,62 Q76,90 77,140" stroke="#1f1f1f" stroke-width="1.5" fill="none"/>
-            <path d="M135,65 Q132,90 130,130" stroke="#1f1f1f" stroke-width="2" fill="none"/>
-            <path d="M125,62 Q124,90 123,140" stroke="#1f1f1f" stroke-width="1.5" fill="none"/>
-            <ellipse cx="42" cy="65" rx="16" ry="14"/>
-            <ellipse cx="158" cy="65" rx="16" ry="14"/>
-            <path d="M29,76 Q22,80 20,95 Q19,110 23,118 L33,116 Q36,108 37,94 Q37,82 33,76 Z"/>
-            <path d="M171,76 Q178,80 180,95 Q181,110 177,118 L167,116 Q164,108 163,94 Q163,82 167,76 Z"/>
-            <path d="M23,118 Q18,125 17,145 Q17,158 22,163 L31,161 Q35,155 35,143 Q35,128 33,116 Z"/>
-            <path d="M177,118 Q182,125 183,145 Q183,158 178,163 L169,161 Q165,155 165,143 Q165,128 167,116 Z"/>
-            <ellipse cx="20" cy="167" rx="7" ry="9"/>
-            <ellipse cx="180" cy="167" rx="7" ry="9"/>
-            <path d="M73,175 Q65,178 62,188 L65,205 L135,205 L138,188 Q135,178 127,175 Z"/>
-            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z"/>
-            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z"/>
-            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z"/>
-            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z"/>
-            <ellipse cx="72" cy="372" rx="17" ry="8"/>
-            <ellipse cx="128" cy="372" rx="17" ry="8"/>
-          </g>
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;font-family:Bebas Neue">ZADNÍ</div>
+        <svg viewBox="0 0 200 480" style="width:100%;height:auto">
+          <defs><style>.base{fill:#1e1e1e;stroke:#444;stroke-width:0.6}.line{fill:none;stroke:#555;stroke-width:0.8}</style></defs>
+          <defs>
+  <style>
+    .base{fill:#1e1e1e;stroke:#444;stroke-width:0.6}
+    .line{fill:none;stroke:#555;stroke-width:0.8}
+  </style>
+</defs>
 
-          <!-- MUSCLE OVERLAYS BACK -->
-          <g id="b-Záda" opacity="0" style="cursor:pointer" onclick="showBodyPart('Záda')">
-            <path d="M60,58 L55,140 Q57,148 65,150 L88,148 Q96,145 97,138 L98,65 Q85,60 60,58Z" fill="#c8f542"/>
-            <path d="M140,58 L145,140 Q143,148 135,150 L112,148 Q104,145 103,138 L102,65 Q115,60 140,58Z" fill="#c8f542"/>
-            <path d="M65,65 Q68,90 70,130" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.2"/>
-            <path d="M75,62 Q76,90 77,140" stroke="#fff" stroke-width="1" fill="none" opacity="0.2"/>
-            <path d="M135,65 Q132,90 130,130" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.2"/>
-            <path d="M125,62 Q124,90 123,140" stroke="#fff" stroke-width="1" fill="none" opacity="0.2"/>
-          </g>
-          <g id="b-Ramena" opacity="0" style="cursor:pointer" onclick="showBodyPart('Ramena')">
-            <ellipse cx="42" cy="65" rx="16" ry="14" fill="#f542c8"/>
-            <ellipse cx="158" cy="65" rx="16" ry="14" fill="#f542c8"/>
-          </g>
-          <g id="b-Triceps" opacity="0" style="cursor:pointer" onclick="showBodyPart('Triceps')">
-            <path d="M28,80 Q21,85 19,100 Q18,114 22,120 L29,118 Q32,112 33,100 Q33,86 29,80 Z" fill="#f5f542"/>
-            <path d="M172,80 Q179,85 181,100 Q182,114 178,120 L171,118 Q168,112 167,100 Q167,86 171,80 Z" fill="#f5f542"/>
-          </g>
-          <g id="b-Nohy" opacity="0" style="cursor:pointer" onclick="showBodyPart('Nohy')">
-            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z" fill="#f5a142" opacity="0.8"/>
-            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z" fill="#f5a142" opacity="0.8"/>
-            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z" fill="#f5a142" opacity="0.6"/>
-            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z" fill="#f5a142" opacity="0.6"/>
-          </g>
+<!-- HEAD back -->
+<ellipse class="base" cx="100" cy="22" rx="19" ry="22"/>
+<ellipse class="base" cx="81" cy="23" rx="4" ry="5"/>
+<ellipse class="base" cx="119" cy="23" rx="4" ry="5"/>
 
-          <!-- LABELS BACK -->
-          <text x="100" y="100" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" id="blb-Záda" opacity="0">— kg</text>
-          <text x="14" y="100" text-anchor="middle" fill="white" font-size="6" font-family="Bebas Neue" pointer-events="none" id="blb-Triceps" opacity="0">—</text>
+<!-- NECK back -->
+<path class="base" d="M91,41 Q91,50 93,52 L107,52 Q109,50 109,41 Q104,39 96,41 Z"/>
+<path class="line" d="M100,42 L100,52"/>
+
+<!-- TRAPEZIUS large back muscle -->
+<path class="base" d="M93,44 Q70,46 52,58 Q40,65 37,76 L48,74 Q58,68 72,62 L93,58 Z"/>
+<path class="base" d="M107,44 Q130,46 148,58 Q160,65 163,76 L152,74 Q142,68 128,62 L107,58 Z"/>
+<!-- trap center diamond -->
+<path class="base" d="M93,44 L100,38 L107,44 L100,120 Z"/>
+<!-- trap lines -->
+<path class="line" d="M93,46 Q85,54 72,64"/>
+<path class="line" d="M107,46 Q115,54 128,64"/>
+<path class="line" d="M96,44 L94,118"/>
+<path class="line" d="M104,44 L106,118"/>
+
+<!-- POSTERIOR DELTOID L -->
+<path class="base" d="M37,76 Q28,74 24,82 Q20,90 24,102 Q28,110 36,112 L46,104 Q50,96 50,86 Q46,78 37,76 Z"/>
+<!-- POSTERIOR DELTOID R -->
+<path class="base" d="M163,76 Q172,74 176,82 Q180,90 176,102 Q172,110 164,112 L154,104 Q150,96 150,86 Q154,78 163,76 Z"/>
+
+<!-- INFRASPINATUS L -->
+<path class="base" d="M48,74 L44,104 Q46,114 56,118 L84,118 Q94,114 96,102 L97,68 Q80,62 48,74 Z"/>
+<!-- INFRASPINATUS R -->
+<path class="base" d="M152,74 L156,104 Q154,114 144,118 L116,118 Q106,114 104,102 L103,68 Q120,62 152,74 Z"/>
+<!-- infraspinatus lines -->
+<path class="line" d="M56,76 Q60,96 62,116"/>
+<path class="line" d="M68,72 Q70,94 70,116"/>
+<path class="line" d="M80,70 Q80,92 80,116"/>
+<path class="line" d="M144,76 Q140,96 138,116"/>
+<path class="line" d="M132,72 Q130,94 130,116"/>
+<path class="line" d="M120,70 Q120,92 120,116"/>
+
+<!-- LATISSIMUS DORSI L -->
+<path class="base" d="M44,104 L40,148 Q40,162 50,168 L72,170 Q82,166 84,152 L84,118 L56,118 Z"/>
+<!-- LATISSIMUS R -->
+<path class="base" d="M156,104 L160,148 Q160,162 150,168 L128,170 Q118,166 116,152 L116,118 L144,118 Z"/>
+<!-- lat lines -->
+<path class="line" d="M46,112 Q46,140 48,164"/>
+<path class="line" d="M56,118 Q56,144 58,166"/>
+<path class="line" d="M154,112 Q154,140 152,164"/>
+<path class="line" d="M144,118 Q144,144 142,166"/>
+
+<!-- ERECTOR SPINAE (spine muscles) -->
+<path class="base" d="M88,58 L86,196 Q86,202 90,204 L94,204 L94,56 Z"/>
+<path class="base" d="M112,58 L114,196 Q114,202 110,204 L106,204 L106,56 Z"/>
+<!-- spine line -->
+<path class="line" d="M100,52 L100,204" stroke="#444"/>
+
+<!-- TERES MINOR / MAJOR -->
+<path class="base" d="M44,104 Q40,114 42,124 L54,122 Q56,112 56,104 Z"/>
+<path class="base" d="M156,104 Q160,114 158,124 L146,122 Q144,112 144,104 Z"/>
+
+<!-- TRICEPS BRACHII L -->
+<path class="base" d="M24,102 Q14,108 11,122 Q9,136 13,148 Q17,158 26,160 L36,156 Q42,146 42,132 Q42,118 36,112 L46,104 Z"/>
+<!-- TRICEPS R -->
+<path class="base" d="M176,102 Q186,108 189,122 Q191,136 187,148 Q183,158 174,160 L164,156 Q158,146 158,132 Q158,118 164,112 L154,104 Z"/>
+<!-- tricep lines -->
+<path class="line" d="M16,114 Q16,132 18,154"/>
+<path class="line" d="M26,110 Q26,130 28,155"/>
+<path class="line" d="M184,114 Q184,132 182,154"/>
+<path class="line" d="M174,110 Q174,130 172,155"/>
+
+<!-- FOREARM back L -->
+<path class="base" d="M13,148 Q8,156 7,170 Q6,183 10,191 L20,192 Q26,185 27,170 Q28,156 26,160 L36,156 Z"/>
+<!-- FOREARM back R -->
+<path class="base" d="M187,148 Q192,156 193,170 Q194,183 190,191 L180,192 Q174,185 173,170 Q172,156 174,160 L164,156 Z"/>
+
+<!-- HANDS back -->
+<path class="base" d="M7,191 Q5,196 6,203 Q8,208 14,209 L22,208 Q26,204 26,198 L20,192 Z"/>
+<path class="base" d="M193,191 Q195,196 194,203 Q192,208 186,209 L178,208 Q174,204 174,198 L180,192 Z"/>
+
+<!-- GLUTEUS / LOWER BACK -->
+<path class="base" d="M84,196 Q80,206 78,218 Q76,228 80,236 L120,236 Q124,228 122,218 Q120,206 116,196 Z"/>
+<path class="line" d="M95,198 Q94,214 93,232"/>
+<path class="line" d="M105,198 Q106,214 107,232"/>
+
+<!-- GLUTEUS MAXIMUS L -->
+<path class="base" d="M40,168 Q36,180 36,196 Q36,212 44,222 L72,228 Q82,224 84,212 Q86,200 82,192 L72,170 Z"/>
+<!-- GLUTEUS R -->
+<path class="base" d="M160,168 Q164,180 164,196 Q164,212 156,222 L128,228 Q118,224 116,212 Q114,200 118,192 L128,170 Z"/>
+<!-- glute lines -->
+<path class="line" d="M42,176 Q42,196 44,218"/>
+<path class="line" d="M58,174 Q58,194 60,220"/>
+<path class="line" d="M158,176 Q158,196 156,218"/>
+<path class="line" d="M142,174 Q142,194 140,220"/>
+
+<!-- HAMSTRINGS L -->
+<path class="base" d="M44,222 L38,320 Q37,334 44,338 L72,338 Q80,334 80,320 L76,228 Z"/>
+<!-- ham lines -->
+<path class="line" d="M46,228 Q44,280 44,330"/>
+<path class="line" d="M58,226 Q58,278 58,332"/>
+<path class="line" d="M70,226 Q72,278 74,332"/>
+<!-- HAMSTRINGS R -->
+<path class="base" d="M156,222 L162,320 Q163,334 156,338 L128,338 Q120,334 120,320 L124,228 Z"/>
+<path class="line" d="M154,228 Q156,280 156,330"/>
+<path class="line" d="M142,226 Q142,278 142,332"/>
+<path class="line" d="M130,226 Q128,278 126,332"/>
+
+<!-- KNEE back L -->
+<path class="base" d="M38,334 Q36,342 38,350 L60,352 Q68,348 72,342 Q78,336 80,334 Z"/>
+<!-- KNEE back R -->
+<path class="base" d="M162,334 Q164,342 162,350 L140,352 Q132,348 128,342 Q122,336 120,334 Z"/>
+
+<!-- CALF / GASTROCNEMIUS L -->
+<path class="base" d="M38,350 Q30,360 28,378 Q27,396 34,408 L48,412 Q56,406 58,394 Q62,376 60,362 L60,352 Z"/>
+<path class="base" d="M60,352 Q68,360 70,376 Q72,394 66,406 L52,412 L48,412 Q56,406 58,394 Q62,376 60,362 Z"/>
+<!-- CALF R -->
+<path class="base" d="M162,350 Q170,360 172,378 Q173,396 166,408 L152,412 Q144,406 142,394 Q138,376 140,362 L140,352 Z"/>
+<path class="base" d="M140,352 Q132,360 130,376 Q128,394 134,406 L148,412 L152,412 Q144,406 142,394 Q138,376 140,362 Z"/>
+<!-- calf lines -->
+<path class="line" d="M34,360 Q33,378 34,402"/>
+<path class="line" d="M48,358 Q50,378 50,406"/>
+<path class="line" d="M166,360 Q167,378 166,402"/>
+<path class="line" d="M152,358 Q150,378 150,406"/>
+
+<!-- ANKLE / FOOT back L -->
+<path class="base" d="M30,406 Q28,414 30,420 L60,422 Q66,420 68,414 Q70,408 66,406 L34,406 Z"/>
+<path class="base" d="M28,420 Q26,426 30,430 Q36,434 60,434 Q72,432 74,426 L62,422 Z"/>
+<!-- ANKLE / FOOT back R -->
+<path class="base" d="M170,406 Q172,414 170,420 L140,422 Q134,420 132,414 Q130,408 134,406 L166,406 Z"/>
+<path class="base" d="M172,420 Q174,426 170,430 Q164,434 140,434 Q128,432 126,426 L138,422 Z"/>
+          
+  <!-- MUSCLE OVERLAYS BACK -->
+  <!-- Záda -->
+  <g id="b-Záda" opacity="0" class="body-hs" onclick="showBodyPart('Záda')" style="cursor:pointer">
+    <path d="M48,74 L44,104 Q46,114 56,118 L84,118 Q94,114 96,102 L97,68 Q80,62 48,74 Z" fill="#c8f542"/>
+    <path d="M152,74 L156,104 Q154,114 144,118 L116,118 Q106,114 104,102 L103,68 Q120,62 152,74 Z" fill="#c8f542"/>
+    <path d="M40,168 Q36,180 36,196 Q36,212 44,222 L72,228 Q82,224 84,212 Q86,200 82,192 L72,170 Z" fill="#c8f542" opacity="0.7"/>
+    <path d="M160,168 Q164,180 164,196 Q164,212 156,222 L128,228 Q118,224 116,212 Q114,200 118,192 L128,170 Z" fill="#c8f542" opacity="0.7"/>
+    <path d="M88,58 L86,196 Q86,202 90,204 L94,204 L94,56 Z" fill="#c8f542" opacity="0.4"/>
+    <path d="M112,58 L114,196 Q114,202 110,204 L106,204 L106,56 Z" fill="#c8f542" opacity="0.4"/>
+  </g>
+  <!-- Ramena zadní -->
+  <g id="b-Ramena" opacity="0" class="body-hs" onclick="showBodyPart('Ramena')" style="cursor:pointer">
+    <path d="M37,76 Q28,74 24,82 Q20,90 24,102 Q28,110 36,112 L46,104 Q50,96 50,86 Q46,78 37,76 Z" fill="#f542c8"/>
+    <path d="M163,76 Q172,74 176,82 Q180,90 176,102 Q172,110 164,112 L154,104 Q150,96 150,86 Q154,78 163,76 Z" fill="#f542c8"/>
+  </g>
+  <!-- Triceps zadní -->
+  <g id="b-Triceps" opacity="0" class="body-hs" onclick="showBodyPart('Triceps')" style="cursor:pointer">
+    <path d="M24,102 Q14,108 11,122 Q9,136 13,148 Q17,158 26,160 L36,156 Q42,146 42,132 Q42,118 36,112 L46,104 Z" fill="#f5f542"/>
+    <path d="M176,102 Q186,108 189,122 Q191,136 187,148 Q183,158 174,160 L164,156 Q158,146 158,132 Q158,118 164,112 L154,104 Z" fill="#f5f542"/>
+  </g>
+  <!-- Nohy zadní (hamstrings + calves) -->
+  <g id="b-Nohy" opacity="0" class="body-hs" onclick="showBodyPart('Nohy')" style="cursor:pointer">
+    <path d="M44,222 L38,320 Q37,334 44,338 L72,338 Q80,334 80,320 L76,228 Z" fill="#f5a142"/>
+    <path d="M156,222 L162,320 Q163,334 156,338 L128,338 Q120,334 120,320 L124,228 Z" fill="#f5a142"/>
+    <path d="M38,350 Q30,360 28,378 Q27,396 34,408 L48,412 Q56,406 58,394 Q62,376 60,362 L60,352 Z" fill="#f5a142" opacity="0.8"/>
+    <path d="M60,352 Q68,360 70,376 Q72,394 66,406 L52,412 L48,412 Q56,406 58,394 Q62,376 60,362 Z" fill="#f5a142" opacity="0.7"/>
+    <path d="M162,350 Q170,360 172,378 Q173,396 166,408 L152,412 Q144,406 142,394 Q138,376 140,362 L140,352 Z" fill="#f5a142" opacity="0.8"/>
+    <path d="M140,352 Q132,360 130,376 Q128,394 134,406 L148,412 L152,412 Q144,406 142,394 Q138,376 140,362 Z" fill="#f5a142" opacity="0.7"/>
+  </g>
+  <!-- KG LABELS back -->
+  <text id="blb-Záda" x="100" y="96" text-anchor="middle" fill="white" font-size="8" font-family="Bebas Neue" pointer-events="none" opacity="0"></text>
+  <text id="blb-Triceps" x="12" y="132" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" opacity="0"></text>
+  <text id="blb-Nohy" x="60" y="290" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" opacity="0"></text>
+
         </svg>
       </div>
     </div>
 
     <!-- DETAIL POPUP -->
-    <div id="body-detail" style="display:none;background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:12px;flex-shrink:0;margin-top:6px;margin-bottom:6px">
+    <div id="body-detail" style="display:none;background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:12px;flex-shrink:0;margin-top:6px;margin-bottom:4px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div id="bd-title" style="font-family:'Bebas Neue';font-size:18px;letter-spacing:1px"></div>
+        <div id="bd-title" style="font-family:Bebas Neue;font-size:18px;letter-spacing:1px"></div>
         <button onclick="document.getElementById('body-detail').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">×</button>
       </div>
       <div id="bd-content"></div>
