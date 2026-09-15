@@ -288,7 +288,7 @@ select.inp{appearance:none;cursor:pointer}
   </div>
   <button class="btn" onclick="openTrainSheet()">+ ZAPSAT TRÉNINK</button>
   <div class="divider"><span>NEBO</span></div>
-  <button class="btn-g" onclick="saveRest()">Označit jako volno</button>
+  <button class="btn-g" id="rest-toggle-btn" onclick="toggleRest()">Označit jako volno</button>
 </div>
 
 <!-- TRAIN SHEET -->
@@ -438,7 +438,7 @@ function renderWeek(){
       </div>
       <div class="w-day-right">
         ${hasTrain?`<div class="w-grp-labels">${labels}</div>`:''}
-        ${isRest?'<span class="w-rest">Volno</span>':''}
+        ${isRest&&!hasTrain?'<span class="w-rest">Volno</span>':''}
         ${hasPlan?plan.grp.split(',').map(g=>`<span class="w-grp-label" style="color:${GRP_COLORS[g.trim()]};background:${GRP_COLORS[g.trim()]}15;border:1px dashed ${GRP_COLORS[g.trim()]}66">${g.trim()}?</span>`).join(''):''}
         ${!hasTrain&&!isRest&&!hasPlan?'<span style="font-size:11px;color:var(--m2)">—</span>':''}
       </div>
@@ -467,6 +467,16 @@ function openDay(date){
     document.getElementById('day-plan-text').innerHTML=plan.grp.split(',').map(g=>`<span class="tag" style="background:${GRP_COLORS[g.trim()]}22;color:${GRP_COLORS[g.trim()]};margin-right:6px">${g.trim()}</span>`).join('');
   }else{
     planBox.style.display='none';
+  }
+
+  // Update rest toggle button text
+  const restBtn=document.getElementById('rest-toggle-btn');
+  if(isRest){
+    restBtn.textContent='Odebrat volno';
+    restBtn.style.color='var(--red)';restBtn.style.borderColor='var(--red)';
+  }else{
+    restBtn.textContent='Označit jako volno';
+    restBtn.style.color='var(--muted)';restBtn.style.borderColor='var(--b2)';
   }
 
   openSheet('day-sheet');
@@ -537,15 +547,22 @@ async function delEx(idx){
   showToast('✓ Smazáno');
 }
 
-async function saveRest(){
-  if(restDays.includes(selectedDate)){showToast('Rest day již označen');return;}
-  await sb.from('rest_days').insert({date:selectedDate,note:''});
-  restDays.push(selectedDate);
-  if(weekPlans[selectedDate]){
-    await sb.from('week_plans').delete().eq('date',selectedDate);
-    delete weekPlans[selectedDate];
+async function toggleRest(){
+  if(restDays.includes(selectedDate)){
+    // Odebrat volno
+    await sb.from('rest_days').delete().eq('date',selectedDate);
+    restDays=restDays.filter(d=>d!==selectedDate);
+    renderWeek();closeAll();showToast('Volno odebráno');
+  }else{
+    // Přidat volno
+    await sb.from('rest_days').insert({date:selectedDate,note:''});
+    restDays.push(selectedDate);
+    if(weekPlans[selectedDate]){
+      await sb.from('week_plans').delete().eq('date',selectedDate);
+      delete weekPlans[selectedDate];
+    }
+    renderWeek();closeAll();showToast('Rest day uložen');
   }
-  renderWeek();closeAll();showToast('Rest day uložen');
 }
 
 // TRAIN SHEET
@@ -832,8 +849,13 @@ async function loadWeekPlans(){
   (data||[]).forEach(p=>{weekPlans[p.date]=p;});
 }
 
+// Deterministický plánovací algoritmus — vždy vybere partii nejdéle netrénovanou,
+// respektuje minimální 2denní odstup mezi tréninky stejné partie.
+const BIG_GROUPS=['Záda','Hrudník','Nohy'];
+const SMALL_GROUPS=['Biceps','Triceps','Ramena','Břicho'];
+const PAIR_MAP={'Záda':'Biceps','Hrudník':'Triceps','Nohy':'Ramena'};
+
 async function planWeek(){
-  const btn=document.getElementById('ai-input');
   const res=document.getElementById('ai-result');
   res.style.display='block';res.textContent='Sestavuji plán týdne...';
 
@@ -841,64 +863,61 @@ async function planWeek(){
     const{data:mem}=await sb.from('ai_memory').select('key,value');
     const m={};(mem||[]).forEach(r=>m[r.key]=r.value);
     const gld=m.grp_last_dates?JSON.parse(m.grp_last_dates):{};
-    const gc=m.grp_counts?JSON.parse(m.grp_counts):{};
 
-    // Zjisti jaké dny v aktuálním týdnu ještě nemají trénink ani plán
+    const parseDate=s=>{const[dd,mm,yy]=s.split('.').map(x=>parseInt(x));return new Date(yy,mm-1,dd);};
+
+    // Track poslední datum trénování každé partie (začínáme z reálné historie)
+    const lastTrained={};
+    ALL_GRPS.forEach(g=>{lastTrained[g]=gld[g]?parseDate(gld[g]):null;});
+
+    // Zjisti volné dny v týdnu
     const days=[];
     for(let i=0;i<7;i++){
       const d=new Date(weekStart);d.setDate(d.getDate()+i);
       const dstr=ds(d);
       const hasTrain=sessions.some(s=>s.date===dstr);
       const hasRest=restDays.includes(dstr);
-      days.push({date:dstr,dow:DAYS[d.getDay()],hasTrain,hasRest});
+      if(!hasTrain&&!hasRest)days.push({date:dstr,dateObj:d});
     }
 
-    const today0=new Date();today0.setHours(0,0,0,0);
-    const grpS=Object.entries(gld).map(([g,d])=>{
-      const[dd,mm,yy]=d.split('.').map(x=>parseInt(x));
-      const lastDate=new Date(yy,mm-1,dd);
-      const daysAgo=Math.round((today0-lastDate)/(24*60*60*1000));
-      return g+': naposledy před '+daysAgo+' dny ('+d+'), celkem '+(gc[g]||0)+' dnů';
-    }).join('\n');
-    const daysInfo=days.map(d=>d.date+' ('+d.dow+')'+(d.hasTrain?' - už má trénink':d.hasRest?' - volno':' - volný den')).join('\n');
+    const plan=[];
 
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
-      body:JSON.stringify({model:'groq/compound',messages:[
-        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Sestav plán na volné dny v týdnu. Uživatel obvykle trénuje DVĚ partie na den — jeden velký sval (Záda/Hrudník/Nohy) a jeden menší (Biceps/Triceps/Ramena/Břicho). DŮLEŽITÉ PRAVIDLO: stejná partie potřebuje MINIMÁLNĚ 2-3 dny odpočinku mezi tréninky — nikdy nenavrhuj partii co byla trénovaná před méně než 2 dny, a v rámci plánovaného týdne nikdy neopakuj stejnou partii dřív než po 3 dnech od předchozího naplánovaného dne se stejnou partií. Odpověz POUZE JSON polem, bez textu okolo, formát: [{"date":"DD.MM.YYYY","grp":"Partie1,Partie2"}]. Partie musí být přesně z: Záda, Hrudník, Nohy, Ramena, Biceps, Triceps, Břicho. Logické páry: Záda+Biceps, Hrudník+Triceps, Nohy+Ramena nebo Nohy+Břicho. Vynech dny co už mají trénink nebo volno.'},
-        {role:'user',content:'STAV PARTIÍ (kolik dní zpět naposledy trénováno):\n'+grpS+'\n\nDNY TÝDNE:\n'+daysInfo+'\n\nNaplánuj volné dny. Nezapomeň: partie trénovaná před méně než 2 dny se NESMÍ opakovat.'}
-      ],max_tokens:400,temperature:0.3})
-    });
-    if(!r.ok)throw new Error(await r.text());
-    const data=await r.json();
-    const raw=data.choices?.[0]?.message?.content||'[]';
-    const jsonMatch=raw.match(/\[[\s\S]*\]/);
-    let plan=JSON.parse(jsonMatch?jsonMatch[0]:'[]');
-
-    // Bezpečnostní filtr — over že žádná partie není naplánovaná dřív než 2 dny po posledním tréninku
-    const parseDate=s=>{const[dd,mm,yy]=s.split('.').map(x=>parseInt(x));return new Date(yy,mm-1,dd);};
-    const usedGrpDates={}; // partie -> poslední naplánované/trénované datum v tomto běhu
-    Object.entries(gld).forEach(([g,d])=>{usedGrpDates[g]=parseDate(d);});
-
-    plan=plan.filter(p=>{
-      const pd=parseDate(p.date);
-      const grps=p.grp.split(',').map(g=>g.trim());
-      for(const g of grps){
-        if(usedGrpDates[g]){
-          const diffDays=Math.round((pd-usedGrpDates[g])/(24*60*60*1000));
-          if(diffDays<2)return false; // moc brzy, zahoď tento den
-        }
+    for(const day of days){
+      // Najdi velkou partii s nejvíc dny od posledního tréninku, splňující 2denní odstup
+      let bestBig=null,bestBigDays=-1;
+      for(const g of BIG_GROUPS){
+        const last=lastTrained[g];
+        const daysSince=last?Math.round((day.dateObj-last)/(24*60*60*1000)):999;
+        if(daysSince>=2&&daysSince>bestBigDays){bestBig=g;bestBigDays=daysSince;}
       }
-      // Aktualizuj poslední datum pro tyto partie
-      grps.forEach(g=>{usedGrpDates[g]=pd;});
-      return true;
-    });
+      if(!bestBig)continue; // žádná velká partie nesplňuje odstup, přeskoč den
 
-    // Neukládej rovnou — zobraz návrh k potvrzení
+      // K velké partii přiřaď doporučenou malou partii, pokud i ta splňuje odstup
+      let smallGrp=PAIR_MAP[bestBig];
+      const smallLast=lastTrained[smallGrp];
+      const smallDaysSince=smallLast?Math.round((day.dateObj-smallLast)/(24*60*60*1000)):999;
+      if(smallDaysSince<2){
+        // Zkus jinou malou partii co splňuje odstup
+        let altBest=null,altDays=-1;
+        for(const g of SMALL_GROUPS){
+          const last=lastTrained[g];
+          const ds2=last?Math.round((day.dateObj-last)/(24*60*60*1000)):999;
+          if(ds2>=2&&ds2>altDays){altBest=g;altDays=ds2;}
+        }
+        smallGrp=altBest;
+      }
+
+      const grpStr=smallGrp?bestBig+','+smallGrp:bestBig;
+      plan.push({date:day.date,grp:grpStr});
+
+      // Aktualizuj lastTrained pro použité partie (pro další dny v tomto plánování)
+      lastTrained[bestBig]=day.dateObj;
+      if(smallGrp)lastTrained[smallGrp]=day.dateObj;
+    }
+
     pendingPlan=plan;
     if(!plan.length){
-      res.innerHTML='Žádný den nesplňuje podmínku odpočinku partií — zkus to příští týden.';
+      res.innerHTML='Žádný volný den nesplňuje podmínku odpočinku partií — zkus to příští týden.';
       return;
     }
     const planHtml=plan.map(p=>{
