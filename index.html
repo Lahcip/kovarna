@@ -35,26 +35,30 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .week-nav-btn{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1}
 .week-range{font-size:12px;color:var(--muted);letter-spacing:.5px}
-.week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;flex:1;min-height:0}
+.week-days{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0;overflow-y:auto}
 
 .w-day{
-  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
-  display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;
+  background:var(--s1);border:1px solid var(--b1);border-radius:12px;
+  display:flex;align-items:center;padding:12px 16px;
   cursor:pointer;transition:transform .1s,border-color .15s;
-  overflow:hidden;min-height:0;
+  flex-shrink:0;
   -webkit-tap-highlight-color:transparent;
 }
-.w-day:active{transform:scale(.96)}
+.w-day:active{transform:scale(.98)}
 .w-day.today{border-color:var(--accent);background:var(--abg)}
 .w-day.has-train{background:var(--abg);border-color:#2d3d00}
 .w-day.is-rest{background:var(--s2);border-color:var(--b2)}
-.w-day-name{font-size:9px;color:var(--muted);letter-spacing:.5px;margin-bottom:4px;text-transform:uppercase}
-.w-day-num{font-family:'Bebas Neue';font-size:24px;color:var(--text);line-height:1;margin-bottom:4px}
+.w-day-left{display:flex;align-items:center;gap:12px;min-width:80px}
+.w-day-name{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;min-width:20px}
+.w-day-num{font-family:'Bebas Neue';font-size:28px;color:var(--text);line-height:1}
 .w-day.today .w-day-num{color:var(--accent)}
 .w-day.has-train .w-day-num{color:var(--accent)}
-.w-dots{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:auto}
-.w-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.w-rest{font-size:13px;margin-top:auto}
+.w-day-right{flex:1;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.w-dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.w-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.w-rest{font-size:13px;color:var(--muted);font-size:12px}
+.w-grp-labels{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.w-grp-label{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--s2);color:var(--muted)}
 
 /* AI STRIP */
 .ai-strip{padding:10px 16px;flex-shrink:0}
@@ -350,11 +354,18 @@ function renderWeek(){
     const dstr=ds(d);
     const hasTrain=dates.has(dstr),isRest=rests.has(dstr),isToday=dstr===todayStr;
     const grps=grpsFor(dstr);
-    const dots=grps.slice(0,4).map(g=>`<div class="w-dot" style="background:${GRP_COLORS[g]}"></div>`).join('');
+    const dots=grps.map(g=>`<div class="w-dot" style="background:${GRP_COLORS[g]}"></div>`).join('');
+    const labels=grps.map(g=>`<span class="w-grp-label" style="color:${GRP_COLORS[g]};background:${GRP_COLORS[g]}22">${g}</span>`).join('');
     html+=`<div class="w-day${hasTrain?' has-train':''}${isRest?' is-rest':''}${isToday?' today':''}" onclick="openDay('${dstr}')">
-      <div class="w-day-name">${DAYS[d.getDay()]}</div>
-      <div class="w-day-num">${d.getDate()}</div>
-      <div class="w-dots">${hasTrain?dots:isRest?'<div class="w-rest">🛌</div>':''}</div>
+      <div class="w-day-left">
+        <div class="w-day-name">${DAYS[d.getDay()]}</div>
+        <div class="w-day-num">${d.getDate()}</div>
+      </div>
+      <div class="w-day-right">
+        ${hasTrain?`<div class="w-grp-labels">${labels}</div>`:''}
+        ${isRest?'<span class="w-rest">Volno</span>':''}
+        ${!hasTrain&&!isRest?'<span style="font-size:11px;color:var(--m2)">—</span>':''}
+      </div>
     </div>`;
   }
   document.getElementById('week-days').innerHTML=html;
