@@ -61,10 +61,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .w-grp-label{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--s2);color:var(--muted)}
 
 /* AI STRIP */
-.ai-strip{padding:10px 16px;flex-shrink:0}
-.ai-btn{width:100%;background:none;border:1px solid var(--b2);color:var(--muted);border-radius:10px;padding:10px 16px;font-size:13px;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px}
-.ai-btn:hover{border-color:var(--accent);color:var(--accent)}
-.ai-result{margin-top:8px;background:var(--abg);border:1px solid #2d3d00;border-radius:10px;padding:12px 14px;font-size:12px;color:#cce870;line-height:1.7;display:none}
+.ai-chat{padding:8px 16px 10px;flex-shrink:0;border-top:1px solid var(--b1)}
+.ai-result{background:var(--abg);border:1px solid #2d3d00;border-radius:10px;padding:12px 14px;font-size:12px;color:#cce870;line-height:1.7;display:none;margin-bottom:8px;max-height:120px;overflow-y:auto}
+.ai-quick-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;padding-bottom:2px}
+.ai-quick-chips::-webkit-scrollbar{display:none}
+.ai-chip{background:var(--s2);border:1px solid var(--b2);color:var(--muted);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:'DM Sans'}
+.ai-chip:hover{border-color:var(--accent);color:var(--accent)}
+.ai-input-row{display:flex;gap:8px;align-items:center}
+.ai-input{flex:1;background:var(--s2);border:1px solid var(--b2);color:var(--text);border-radius:10px;padding:10px 14px;font-family:'DM Sans';font-size:14px;outline:none}
+.ai-input:focus{border-color:var(--accent)}
+.ai-send{background:var(--accent);border:none;color:#0a0a0a;border-radius:10px;width:42px;height:42px;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue'}
+.ai-send:active{opacity:.8}
+.ai-send:disabled{opacity:.4;cursor:default}
 
 /* BOTTOM NAV */
 .bnav{display:flex;border-top:1px solid var(--b1);flex-shrink:0}
