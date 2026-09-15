@@ -180,11 +180,18 @@ select.inp{appearance:none;cursor:pointer}
     </div>
     <div class="week-days" id="week-days"></div>
   </div>
-  <div class="ai-strip">
-    <button class="ai-btn" id="ai-btn" onclick="getAI()">
-      <span>Co dnes cvičit? — AI trenér</span>
-    </button>
-    <div class="ai-result" id="ai-result"></div>
+  <div class="ai-chat">
+    <div id="ai-result" class="ai-result"></div>
+    <div class="ai-quick-chips">
+      <button class="ai-chip" onclick="sendAI('Co bych měl dnes cvičit?')">Dnes</button>
+      <button class="ai-chip" onclick="sendAI('Co bych měl cvičit zítra?')">Zítra</button>
+      <button class="ai-chip" onclick="sendAI('Udělej mi plán na tento týden podle mé historie.')">Plán týdne</button>
+      <button class="ai-chip" onclick="sendAI('Jak si celkově vedu? Zhodnoť můj pokrok.')">Pokrok</button>
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="ai-input" placeholder="Zeptej se AI trenéra..." onkeydown="if(event.key==='Enter')sendAI()">
+      <button class="ai-send" id="ai-send" onclick="sendAI()">→</button>
+    </div>
   </div>
 </div>
 
@@ -659,12 +666,18 @@ function renderProg(){
   }).join('');
 }
 
-// AI
-async function getAI(){
-  const btn=document.getElementById('ai-btn');
+// AI CHAT
+let aiHistory=[];
+
+async function sendAI(quickMsg){
+  const input=document.getElementById('ai-input');
+  const send=document.getElementById('ai-send');
   const res=document.getElementById('ai-result');
-  btn.querySelector('span:last-child').textContent='⏳ Načítám...';
-  btn.disabled=true;res.style.display='none';
+  const msg=quickMsg||input.value.trim();
+  if(!msg)return;
+  input.value='';
+  send.disabled=true;send.textContent='...';
+  res.style.display='block';res.textContent='Přemýšlím...';
   try{
     const{data:mem}=await sb.from('ai_memory').select('key,value');
     const m={};(mem||[]).forEach(r=>m[r.key]=r.value);
@@ -674,21 +687,27 @@ async function getAI(){
     const ae=m.all_exercises?JSON.parse(m.all_exercises):[];
     const streak=parseInt(m.current_streak||'0');
     const today=new Date().toLocaleDateString('cs-CZ');
+    const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
     const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+'x').join('\n');
     const exS=ae.map(e=>e+': max '+(emw[e]||0)+'kg').join('\n');
+    const systemMsg='Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
+    aiHistory.push({role:'user',content:msg});
+    if(aiHistory.length>10)aiHistory=aiHistory.slice(-10);
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
-      body:JSON.stringify({model:'groq/compound',messages:[
-        {role:'system',content:'Jsi fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Doporučuj VÝHRADNĚ z uvedených cviků. Prioritizuj nejdéle netrénované partie. Streak>=3=volno. Česky, max 4 věty. Dnes: '+today+', streak: '+streak+' dní.'},
-        {role:'user',content:'PARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS+'\n\nCo dnes?'}
-      ],max_tokens:300,temperature:0.4})
+      body:JSON.stringify({model:'groq/compound',messages:[{role:'system',content:systemMsg},...aiHistory],max_tokens:400,temperature:0.5})
     });
     if(!r.ok)throw new Error(await r.text());
     const data=await r.json();
-    res.style.display='block';res.textContent=data.choices?.[0]?.message?.content||'Nepodařilo se načíst.';
-  }catch(e){res.style.display='block';res.textContent='Chyba: '+e.message;}
-  btn.querySelector('span:last-child').textContent='Co dnes cvičit? — zeptat se AI';btn.disabled=false;
+    const reply=data.choices?.[0]?.message?.content||'Nepodařilo se načíst.';
+    aiHistory.push({role:'assistant',content:reply});
+    res.textContent=reply;
+  }catch(e){
+    res.textContent='Chyba: '+e.message;
+    aiHistory.pop();
+  }
+  send.disabled=false;send.textContent='→';
 }
 
 // AI MEMORY
