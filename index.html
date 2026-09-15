@@ -498,23 +498,27 @@ async function confirmPlan(){
   }
   document.getElementById('esel').value=suggestedEx;
 
-  // Předvyplň sérii s navrženou váhou na základě posledního tréninku tohoto cviku
+  // Předvyplň sérii s navrženou váhou — styl: max 3 série, do selhání, těžké váhy
   const exHistory=sessions.filter(s=>s.ex===suggestedEx&&s.grp===firstGrp);
   if(exHistory.length){
     const lastDate=exHistory[0].date;
     const lastSets=exHistory.filter(s=>s.date===lastDate).sort((a,b)=>a.serie-b.serie);
-    sets=lastSets.map(s=>{
-      // Navrhni mírně vyšší váhu (progrese) při zachování reps
-      const suggestedW=s.weight?Math.round(s.weight*1.025*2)/2:s.weight;
-      return{r:s.reps||'',w:suggestedW||''};
-    });
-    if(!sets.length)sets=[{r:'',w:''}];
+    // Vezmi nejtěžší sérii jako základ, ne první
+    const heaviest=lastSets.reduce((max,s)=>(s.weight||0)>(max.weight||0)?s:max,lastSets[0]);
+    const suggestedW=heaviest.weight?Math.round(heaviest.weight*1.025*2)/2:heaviest.weight;
+    const suggestedReps=Math.max(5,Math.min(8,heaviest.reps||6)); // 5-8 opak pro sílu do selhání
+    // Max 3 série, stejná těžká váha ve všech (straight sets)
+    sets=[
+      {r:suggestedReps,w:suggestedW},
+      {r:suggestedReps,w:suggestedW},
+      {r:suggestedReps,w:suggestedW}
+    ];
   }else{
-    sets=[{r:'',w:''}];
+    sets=[{r:'',w:''},{r:'',w:''},{r:'',w:''}];
   }
   renderS();
   updPrev();
-  showToast('Navrženo podle minulého tréninku — uprav podle potřeby');
+  showToast('3 série, těžká váha do selhání — uprav podle potřeby');
   openTrainSheet();
 }
 
@@ -1003,7 +1007,7 @@ async function sendAI(quickMsg){
     const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
     const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+' tréninkových dnů').join('\n');
     const exS=ae.map(e=>e+': max '+(emw[e]||0)+'kg').join('\n');
-    const systemMsg='Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
+    const systemMsg='Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Tréninkový styl uživatele: max 2-3 série na cvik, těžké váhy, do selhání (5-8 opakování), ne 4+ lehčích sérií. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
     aiHistory.push({role:'user',content:msg});
     if(aiHistory.length>10)aiHistory=aiHistory.slice(-10);
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
