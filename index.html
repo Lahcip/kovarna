@@ -212,146 +212,156 @@ select.inp{appearance:none;cursor:pointer}
 <div id="view-prog" style="flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden">
   <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:8px 12px 0">
 
-    <!-- PŘEDNÍ + ZADNÍ SILUETA -->
-    <div style="flex:1;display:flex;gap:8px;min-height:0;align-items:center">
+    <div style="flex:1;display:flex;gap:12px;min-height:0;align-items:center;justify-content:center">
 
       <!-- PŘEDNÍ POHLED -->
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">PŘEDNÍ</div>
-        <svg viewBox="0 0 120 300" style="width:100%;height:auto;max-height:calc(100% - 20px)">
-          <!-- Tělo základní tvar -->
-          <g opacity="0.9">
-            <!-- Hlava -->
-            <circle cx="60" cy="18" r="15" fill="#222" stroke="#333" stroke-width="1.2"/>
-            <!-- Krk -->
-            <rect x="55" y="31" width="10" height="9" rx="3" fill="#222" stroke="#333" stroke-width="0.8"/>
-            <!-- Trapézy/ramena -->
-            <path d="M30,40 Q25,40 22,46 L20,56 L100,56 L98,46 Q95,40 90,40 L30,40Z" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
-            <!-- Trup -->
-            <path d="M28,56 L25,130 Q24,138 30,140 L90,140 Q96,138 95,130 L92,56 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Levá paže -->
-            <path d="M22,46 L15,50 L10,100 L14,108 L22,105 L26,60 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Pravá paže -->
-            <path d="M98,46 L105,50 L110,100 L106,108 L98,105 L94,60 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Předloktí L -->
-            <path d="M10,100 L8,145 L16,147 L22,105 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Předloktí P -->
-            <path d="M110,100 L112,145 L104,147 L98,105 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Boky -->
-            <path d="M25,140 L22,165 Q22,172 30,174 L90,174 Q98,172 98,165 L95,140 Z" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Levé stehno -->
-            <path d="M30,174 L26,240 Q25,248 32,250 L52,250 Q58,248 58,240 L58,174 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Pravé stehno -->
-            <path d="M90,174 L94,240 Q95,248 88,250 L68,250 Q62,248 62,240 L62,174 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Levé lýtko -->
-            <path d="M26,250 L24,285 Q24,293 30,295 L50,295 Q56,293 56,285 L52,250 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Pravé lýtko -->
-            <path d="M94,250 L96,285 Q96,293 90,295 L70,295 Q64,293 64,285 L68,250 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-height:0">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'Bebas Neue'">PŘEDNÍ</div>
+        <svg id="svg-front" viewBox="0 0 200 480" style="width:100%;height:auto;max-height:100%;flex:1">
+          <g fill="#252525" stroke="#333" stroke-width="0.5">
+            <ellipse cx="100" cy="22" rx="18" ry="21"/>
+            <rect x="93" y="40" width="14" height="12" rx="4"/>
+            <path d="M55,52 Q45,50 38,56 Q32,62 33,70 L48,68 Q55,64 60,58 L140,58 Q145,64 152,68 L167,70 Q168,62 162,56 Q155,50 145,52 L100,48 Z"/>
+            <path d="M60,58 L55,95 Q57,105 65,107 L88,103 Q96,100 97,92 L98,65 Q85,60 60,58Z"/>
+            <path d="M140,58 L145,95 Q143,105 135,107 L112,103 Q104,100 103,92 L102,65 Q115,60 140,58Z"/>
+            <rect x="97" y="58" width="6" height="48" rx="2" fill="#1f1f1f"/>
+            <rect x="87" y="110" width="11" height="13" rx="3"/>
+            <rect x="102" y="110" width="11" height="13" rx="3"/>
+            <rect x="87" y="127" width="11" height="13" rx="3"/>
+            <rect x="102" y="127" width="11" height="13" rx="3"/>
+            <rect x="87" y="144" width="11" height="11" rx="3"/>
+            <rect x="102" y="144" width="11" height="11" rx="3"/>
+            <path d="M77,112 Q72,125 75,145 L87,145 L87,110 Z"/>
+            <path d="M123,112 Q128,125 125,145 L113,145 L113,110 Z"/>
+            <ellipse cx="42" cy="65" rx="16" ry="14"/>
+            <ellipse cx="158" cy="65" rx="16" ry="14"/>
+            <path d="M29,76 Q22,80 20,95 Q19,110 23,118 L33,116 Q36,108 37,94 Q37,82 33,76 Z"/>
+            <path d="M171,76 Q178,80 180,95 Q181,110 177,118 L167,116 Q164,108 163,94 Q163,82 167,76 Z"/>
+            <path d="M23,118 Q18,125 17,145 Q17,158 22,163 L31,161 Q35,155 35,143 Q35,128 33,116 Z"/>
+            <path d="M177,118 Q182,125 183,145 Q183,158 178,163 L169,161 Q165,155 165,143 Q165,128 167,116 Z"/>
+            <ellipse cx="20" cy="167" rx="7" ry="9"/>
+            <ellipse cx="180" cy="167" rx="7" ry="9"/>
+            <path d="M77,155 Q74,165 76,175 L124,175 Q126,165 123,155 Z"/>
+            <path d="M73,175 Q65,178 62,188 L65,205 L135,205 L138,188 Q135,178 127,175 Z"/>
+            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z"/>
+            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z"/>
+            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z"/>
+            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z"/>
+            <ellipse cx="72" cy="372" rx="17" ry="8"/>
+            <ellipse cx="128" cy="372" rx="17" ry="8"/>
           </g>
 
-          <!-- HOTSPOTS PŘEDNÍ -->
-          <!-- Hrudník -->
-          <g id="f-Hrudník" class="body-hs" onclick="showBodyPart('Hrudník')">
-            <ellipse cx="60" cy="80" rx="24" ry="18" fill="#42b8f5" opacity="0" id="fo-Hrudník"/>
-            <ellipse cx="60" cy="80" rx="24" ry="18" fill="none" stroke="#42b8f5" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <text x="60" y="77" text-anchor="middle" fill="#42b8f5" font-size="6" font-family="Bebas Neue" letter-spacing="0.5">HRUDNÍK</text>
-            <text id="lb-Hrudník" x="60" y="86" text-anchor="middle" fill="#fff" font-size="7" font-family="DM Sans" font-weight="600">—</text>
+          <!-- MUSCLE OVERLAYS FRONT -->
+          <g id="f-Hrudník" opacity="0" style="cursor:pointer" onclick="showBodyPart('Hrudník')">
+            <path d="M60,58 L55,95 Q57,105 65,107 L88,103 Q96,100 97,92 L98,65 Q85,60 60,58Z" fill="#42b8f5"/>
+            <path d="M140,58 L145,95 Q143,105 135,107 L112,103 Q104,100 103,92 L102,65 Q115,60 140,58Z" fill="#42b8f5"/>
+            <path d="M70,65 Q75,85 78,103" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
+            <path d="M80,62 Q82,82 83,103" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
+            <path d="M130,65 Q125,85 122,103" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
+          </g>
+          <g id="f-Ramena" opacity="0" style="cursor:pointer" onclick="showBodyPart('Ramena')">
+            <ellipse cx="42" cy="65" rx="16" ry="14" fill="#f542c8"/>
+            <ellipse cx="158" cy="65" rx="16" ry="14" fill="#f542c8"/>
+          </g>
+          <g id="f-Biceps" opacity="0" style="cursor:pointer" onclick="showBodyPart('Biceps')">
+            <path d="M29,76 Q22,80 20,95 Q19,110 23,118 L33,116 Q36,108 37,94 Q37,82 33,76 Z" fill="#42f5a1"/>
+            <path d="M171,76 Q178,80 180,95 Q181,110 177,118 L167,116 Q164,108 163,94 Q163,82 167,76 Z" fill="#42f5a1"/>
+          </g>
+          <g id="f-Triceps" opacity="0" style="cursor:pointer" onclick="showBodyPart('Triceps')">
+            <path d="M28,80 Q21,85 19,100 Q18,114 22,120 L29,118 Q32,112 33,100 Q33,86 29,80 Z" fill="#f5f542"/>
+            <path d="M172,80 Q179,85 181,100 Q182,114 178,120 L171,118 Q168,112 167,100 Q167,86 171,80 Z" fill="#f5f542"/>
+          </g>
+          <g id="f-Břicho" opacity="0" style="cursor:pointer" onclick="showBodyPart('Břicho')">
+            <rect x="87" y="110" width="11" height="13" rx="3" fill="#f54242"/>
+            <rect x="102" y="110" width="11" height="13" rx="3" fill="#f54242"/>
+            <rect x="87" y="127" width="11" height="13" rx="3" fill="#f54242"/>
+            <rect x="102" y="127" width="11" height="13" rx="3" fill="#f54242"/>
+            <rect x="87" y="144" width="11" height="11" rx="3" fill="#f54242"/>
+            <rect x="102" y="144" width="11" height="11" rx="3" fill="#f54242"/>
+            <path d="M77,112 Q72,125 75,145 L87,145 L87,110 Z" fill="#f54242" opacity="0.6"/>
+            <path d="M123,112 Q128,125 125,145 L113,145 L113,110 Z" fill="#f54242" opacity="0.6"/>
+          </g>
+          <g id="f-Nohy" opacity="0" style="cursor:pointer" onclick="showBodyPart('Nohy')">
+            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z" fill="#f5a142"/>
+            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z" fill="#f5a142"/>
+            <path d="M80,210 L78,275" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
+            <path d="M120,210 L122,275" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.3"/>
+            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z" fill="#f5a142" opacity="0.6"/>
+            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z" fill="#f5a142" opacity="0.6"/>
+          </g>
+          <g id="f-Záda" opacity="0" style="cursor:pointer" onclick="showBodyPart('Záda')">
+            <path d="M55,52 Q45,50 38,56 Q32,62 33,70 L48,68 Q55,64 60,58 L100,53 L140,58 Q145,64 152,68 L167,70 Q168,62 162,56 Q155,50 145,52 L100,48 Z" fill="#c8f542"/>
           </g>
 
-          <!-- Břicho -->
-          <g id="f-Břicho" class="body-hs" onclick="showBodyPart('Břicho')">
-            <ellipse cx="60" cy="118" rx="18" ry="14" fill="#f54242" opacity="0" id="fo-Břicho"/>
-            <ellipse cx="60" cy="118" rx="18" ry="14" fill="none" stroke="#f54242" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <text x="60" y="115" text-anchor="middle" fill="#f54242" font-size="6" font-family="Bebas Neue">BŘICHO</text>
-            <text id="lb-Břicho" x="60" y="124" text-anchor="middle" fill="#fff" font-size="7" font-family="DM Sans" font-weight="600">—</text>
-          </g>
-
-          <!-- Ramena přední -->
-          <g id="f-Ramena" class="body-hs" onclick="showBodyPart('Ramena')">
-            <ellipse cx="22" cy="52" rx="9" ry="7" fill="#f542c8" opacity="0" id="fo-Ramena"/>
-            <ellipse cx="22" cy="52" rx="9" ry="7" fill="none" stroke="#f542c8" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <ellipse cx="98" cy="52" rx="9" ry="7" fill="none" stroke="#f542c8" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <text id="lb-Ramena" x="60" y="49" text-anchor="middle" fill="#f542c8" font-size="5" font-family="Bebas Neue">RAMENA</text>
-          </g>
-
-          <!-- Biceps -->
-          <g id="f-Biceps" class="body-hs" onclick="showBodyPart('Biceps')">
-            <ellipse cx="13" cy="78" rx="7" ry="12" fill="#42f5a1" opacity="0" id="fo-Biceps"/>
-            <ellipse cx="13" cy="78" rx="7" ry="12" fill="none" stroke="#42f5a1" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <ellipse cx="107" cy="78" rx="7" ry="12" fill="none" stroke="#42f5a1" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <text id="lb-Biceps" x="-4" y="81" text-anchor="middle" fill="#42f5a1" font-size="5" font-family="Bebas Neue">BIC</text>
-          </g>
-
-          <!-- Nohy přední (kvadriceps) -->
-          <g id="f-Nohy" class="body-hs" onclick="showBodyPart('Nohy')">
-            <ellipse cx="39" cy="210" rx="14" ry="28" fill="#f5a142" opacity="0" id="fo-Nohy"/>
-            <ellipse cx="39" cy="210" rx="14" ry="28" fill="none" stroke="#f5a142" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <ellipse cx="81" cy="210" rx="14" ry="28" fill="none" stroke="#f5a142" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <text x="60" y="207" text-anchor="middle" fill="#f5a142" font-size="6" font-family="Bebas Neue">NOHY</text>
-            <text id="lb-Nohy" x="60" y="216" text-anchor="middle" fill="#fff" font-size="7" font-family="DM Sans" font-weight="600">—</text>
-          </g>
+          <!-- LABELS FRONT -->
+          <text x="100" y="83" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" id="flb-Hrudník" opacity="0">— kg</text>
+          <text x="100" y="133" text-anchor="middle" fill="white" font-size="6" font-family="Bebas Neue" pointer-events="none" id="flb-Břicho" opacity="0">— kg</text>
+          <text x="100" y="245" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" id="flb-Nohy" opacity="0">— kg</text>
+          <text x="14" y="100" text-anchor="middle" fill="white" font-size="6" font-family="Bebas Neue" pointer-events="none" id="flb-Biceps" opacity="0">—</text>
         </svg>
       </div>
 
       <!-- ZADNÍ POHLED -->
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">ZADNÍ</div>
-        <svg viewBox="0 0 120 300" style="width:100%;height:auto;max-height:calc(100% - 20px)">
-          <!-- Tělo základní tvar -->
-          <g opacity="0.9">
-            <!-- Hlava -->
-            <circle cx="60" cy="18" r="15" fill="#222" stroke="#333" stroke-width="1.2"/>
-            <!-- Krk -->
-            <rect x="55" y="31" width="10" height="9" rx="3" fill="#222" stroke="#333" stroke-width="0.8"/>
-            <!-- Trapézy/ramena -->
-            <path d="M30,40 Q25,40 22,46 L20,56 L100,56 L98,46 Q95,40 90,40 L30,40Z" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
-            <!-- Trup záda -->
-            <path d="M28,56 L25,130 Q24,138 30,140 L90,140 Q96,138 95,130 L92,56 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Levá paže -->
-            <path d="M22,46 L15,50 L10,100 L14,108 L22,105 L26,60 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Pravá paže -->
-            <path d="M98,46 L105,50 L110,100 L106,108 L98,105 L94,60 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Předloktí -->
-            <path d="M10,100 L8,145 L16,147 L22,105 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <path d="M110,100 L112,145 L104,147 L98,105 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <!-- Boky -->
-            <path d="M25,140 L22,165 Q22,172 30,174 L90,174 Q98,172 98,165 L95,140 Z" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Stehna zadní -->
-            <path d="M30,174 L26,240 Q25,248 32,250 L52,250 Q58,248 58,240 L58,174 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
-            <path d="M90,174 L94,240 Q95,248 88,250 L68,250 Q62,248 62,240 L62,174 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
-            <!-- Lýtka -->
-            <path d="M26,250 L24,285 Q24,293 30,295 L50,295 Q56,293 56,285 L52,250 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
-            <path d="M94,250 L96,285 Q96,293 90,295 L70,295 Q64,293 64,285 L68,250 Z" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;min-height:0">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'Bebas Neue'">ZADNÍ</div>
+        <svg id="svg-back" viewBox="0 0 200 480" style="width:100%;height:auto;max-height:100%;flex:1">
+          <g fill="#252525" stroke="#333" stroke-width="0.5">
+            <ellipse cx="100" cy="22" rx="18" ry="21"/>
+            <rect x="93" y="40" width="14" height="12" rx="4"/>
+            <path d="M55,52 Q45,50 38,56 Q32,62 33,70 L48,68 Q55,64 60,58 L140,58 Q145,64 152,68 L167,70 Q168,62 162,56 Q155,50 145,52 L100,48 Z"/>
+            <!-- Back torso with spine -->
+            <path d="M60,58 L55,140 Q57,148 65,150 L88,148 Q96,145 97,138 L98,65 Q85,60 60,58Z"/>
+            <path d="M140,58 L145,140 Q143,148 135,150 L112,148 Q104,145 103,138 L102,65 Q115,60 140,58Z"/>
+            <rect x="97" y="58" width="6" height="90" rx="2" fill="#1f1f1f"/>
+            <!-- Back muscle details -->
+            <path d="M65,65 Q68,90 70,130" stroke="#1f1f1f" stroke-width="2" fill="none"/>
+            <path d="M75,62 Q76,90 77,140" stroke="#1f1f1f" stroke-width="1.5" fill="none"/>
+            <path d="M135,65 Q132,90 130,130" stroke="#1f1f1f" stroke-width="2" fill="none"/>
+            <path d="M125,62 Q124,90 123,140" stroke="#1f1f1f" stroke-width="1.5" fill="none"/>
+            <ellipse cx="42" cy="65" rx="16" ry="14"/>
+            <ellipse cx="158" cy="65" rx="16" ry="14"/>
+            <path d="M29,76 Q22,80 20,95 Q19,110 23,118 L33,116 Q36,108 37,94 Q37,82 33,76 Z"/>
+            <path d="M171,76 Q178,80 180,95 Q181,110 177,118 L167,116 Q164,108 163,94 Q163,82 167,76 Z"/>
+            <path d="M23,118 Q18,125 17,145 Q17,158 22,163 L31,161 Q35,155 35,143 Q35,128 33,116 Z"/>
+            <path d="M177,118 Q182,125 183,145 Q183,158 178,163 L169,161 Q165,155 165,143 Q165,128 167,116 Z"/>
+            <ellipse cx="20" cy="167" rx="7" ry="9"/>
+            <ellipse cx="180" cy="167" rx="7" ry="9"/>
+            <path d="M73,175 Q65,178 62,188 L65,205 L135,205 L138,188 Q135,178 127,175 Z"/>
+            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z"/>
+            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z"/>
+            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z"/>
+            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z"/>
+            <ellipse cx="72" cy="372" rx="17" ry="8"/>
+            <ellipse cx="128" cy="372" rx="17" ry="8"/>
           </g>
 
-          <!-- HOTSPOTS ZADNÍ -->
-          <!-- Záda -->
-          <g id="b-Záda" class="body-hs" onclick="showBodyPart('Záda')">
-            <ellipse cx="60" cy="90" rx="24" ry="28" fill="#c8f542" opacity="0" id="bo-Záda"/>
-            <ellipse cx="60" cy="90" rx="24" ry="28" fill="none" stroke="#c8f542" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <text x="60" y="87" text-anchor="middle" fill="#c8f542" font-size="7" font-family="Bebas Neue" letter-spacing="0.5">ZÁDA</text>
-            <text id="lb-Záda" x="60" y="97" text-anchor="middle" fill="#fff" font-size="7" font-family="DM Sans" font-weight="600">—</text>
+          <!-- MUSCLE OVERLAYS BACK -->
+          <g id="b-Záda" opacity="0" style="cursor:pointer" onclick="showBodyPart('Záda')">
+            <path d="M60,58 L55,140 Q57,148 65,150 L88,148 Q96,145 97,138 L98,65 Q85,60 60,58Z" fill="#c8f542"/>
+            <path d="M140,58 L145,140 Q143,148 135,150 L112,148 Q104,145 103,138 L102,65 Q115,60 140,58Z" fill="#c8f542"/>
+            <path d="M65,65 Q68,90 70,130" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.2"/>
+            <path d="M75,62 Q76,90 77,140" stroke="#fff" stroke-width="1" fill="none" opacity="0.2"/>
+            <path d="M135,65 Q132,90 130,130" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.2"/>
+            <path d="M125,62 Q124,90 123,140" stroke="#fff" stroke-width="1" fill="none" opacity="0.2"/>
+          </g>
+          <g id="b-Ramena" opacity="0" style="cursor:pointer" onclick="showBodyPart('Ramena')">
+            <ellipse cx="42" cy="65" rx="16" ry="14" fill="#f542c8"/>
+            <ellipse cx="158" cy="65" rx="16" ry="14" fill="#f542c8"/>
+          </g>
+          <g id="b-Triceps" opacity="0" style="cursor:pointer" onclick="showBodyPart('Triceps')">
+            <path d="M28,80 Q21,85 19,100 Q18,114 22,120 L29,118 Q32,112 33,100 Q33,86 29,80 Z" fill="#f5f542"/>
+            <path d="M172,80 Q179,85 181,100 Q182,114 178,120 L171,118 Q168,112 167,100 Q167,86 171,80 Z" fill="#f5f542"/>
+          </g>
+          <g id="b-Nohy" opacity="0" style="cursor:pointer" onclick="showBodyPart('Nohy')">
+            <path d="M65,205 L60,280 Q60,292 68,295 L85,295 Q92,292 93,280 L95,205 Z" fill="#f5a142" opacity="0.8"/>
+            <path d="M135,205 L140,280 Q140,292 132,295 L115,295 Q108,292 107,280 L105,205 Z" fill="#f5a142" opacity="0.8"/>
+            <path d="M60,295 L57,355 Q57,365 64,368 L80,368 Q86,365 87,355 L85,295 Z" fill="#f5a142" opacity="0.6"/>
+            <path d="M140,295 L143,355 Q143,365 136,368 L120,368 Q114,365 113,355 L115,295 Z" fill="#f5a142" opacity="0.6"/>
           </g>
 
-          <!-- Ramena zadní -->
-          <g id="b-Ramena" class="body-hs" onclick="showBodyPart('Ramena')">
-            <ellipse cx="22" cy="52" rx="9" ry="7" fill="none" stroke="#f542c8" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <ellipse cx="98" cy="52" rx="9" ry="7" fill="none" stroke="#f542c8" stroke-width="1.2" stroke-dasharray="2,2"/>
-          </g>
-
-          <!-- Triceps -->
-          <g id="b-Triceps" class="body-hs" onclick="showBodyPart('Triceps')">
-            <ellipse cx="13" cy="78" rx="7" ry="12" fill="#f5f542" opacity="0" id="bo-Triceps"/>
-            <ellipse cx="13" cy="78" rx="7" ry="12" fill="none" stroke="#f5f542" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <ellipse cx="107" cy="78" rx="7" ry="12" fill="none" stroke="#f5f542" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <text id="lb-Triceps" x="-4" y="81" text-anchor="middle" fill="#f5f542" font-size="5" font-family="Bebas Neue">TRI</text>
-          </g>
-
-          <!-- Hamstringy / zadní nohy -->
-          <g id="b-Nohy" class="body-hs" onclick="showBodyPart('Nohy')">
-            <ellipse cx="39" cy="210" rx="14" ry="28" fill="none" stroke="#f5a142" stroke-width="1.5" stroke-dasharray="3,2"/>
-            <ellipse cx="81" cy="210" rx="14" ry="28" fill="none" stroke="#f5a142" stroke-width="1.5" stroke-dasharray="3,2"/>
-          </g>
+          <!-- LABELS BACK -->
+          <text x="100" y="100" text-anchor="middle" fill="white" font-size="7" font-family="Bebas Neue" pointer-events="none" id="blb-Záda" opacity="0">— kg</text>
+          <text x="14" y="100" text-anchor="middle" fill="white" font-size="6" font-family="Bebas Neue" pointer-events="none" id="blb-Triceps" opacity="0">—</text>
         </svg>
       </div>
     </div>
@@ -793,26 +803,41 @@ async function editSet(id,field,val){
 // PROGRESS — BODY MAP
 const GRP_COLORS_MAP={Záda:'#c8f542',Hrudník:'#42b8f5',Nohy:'#f5a142',Ramena:'#f542c8',Biceps:'#42f5a1',Triceps:'#f5f542',Břicho:'#f54242'};
 
+// Přední partie
+const FRONT_GROUPS=['Hrudník','Ramena','Biceps','Triceps','Břicho','Nohy','Záda'];
+// Zadní partie
+const BACK_GROUPS=['Záda','Ramena','Triceps','Nohy'];
+
 function renderProg(){
-  const GRP_ALL=['Záda','Hrudník','Nohy','Ramena','Biceps','Triceps','Břicho'];
-  // Spočítej max sessions za poslední měsíc pro intenzitu
   const now=Date.now();
   const month=30*24*60*60*1000;
-  GRP_ALL.forEach(grp=>{
+
+  FRONT_GROUPS.forEach(grp=>{
     const grpS=sessions.filter(s=>s.grp===grp&&s.weight>0);
-    // Update label
-    const lb=document.getElementById('lb-'+grp);
-    if(lb){lb.textContent=grpS.length?Math.max(...grpS.map(s=>s.weight||0))+'kg':'—';}
-    // Update fill opacity based on sessions in last month
+    const mx=grpS.length?Math.max(...grpS.map(s=>s.weight||0)):0;
     const recentCount=grpS.filter(s=>new Date(s.created_at||0).getTime()>now-month).length;
-    const intensity=Math.min(recentCount/20,1); // 0-1
-    const color=GRP_COLORS_MAP[grp]||'#c8f542';
+    const intensity=Math.min(0.3+recentCount/15*0.65,0.95);
+
     // Front overlay
-    const fo=document.getElementById('fo-'+grp);
-    if(fo)fo.setAttribute('opacity',String(intensity*0.35));
-    // Back overlay
-    const bo=document.getElementById('bo-'+grp);
-    if(bo)bo.setAttribute('opacity',String(intensity*0.35));
+    const fg=document.getElementById('f-'+grp);
+    if(fg)fg.setAttribute('opacity',grpS.length?String(intensity):'0');
+
+    // Front label
+    const fl=document.getElementById('flb-'+grp);
+    if(fl){fl.textContent=mx>0?mx+'kg':'';fl.setAttribute('opacity',grpS.length?'1':'0');}
+  });
+
+  BACK_GROUPS.forEach(grp=>{
+    const grpS=sessions.filter(s=>s.grp===grp&&s.weight>0);
+    const mx=grpS.length?Math.max(...grpS.map(s=>s.weight||0)):0;
+    const recentCount=grpS.filter(s=>new Date(s.created_at||0).getTime()>now-month).length;
+    const intensity=Math.min(0.3+recentCount/15*0.65,0.95);
+
+    const bg=document.getElementById('b-'+grp);
+    if(bg)bg.setAttribute('opacity',grpS.length?String(intensity):'0');
+
+    const bl=document.getElementById('blb-'+grp);
+    if(bl){bl.textContent=mx>0?mx+'kg':'';bl.setAttribute('opacity',grpS.length?'1':'0');}
   });
 }
 
