@@ -127,7 +127,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .chip{padding:6px 14px;border-radius:20px;background:var(--s2);border:1px solid var(--b2);color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:all .15s}
 .chip.active{background:var(--abg);border-color:var(--accent);color:var(--accent)}
-.set-row{display:grid;grid-template-columns:36px 1fr 1fr 28px;gap:6px;margin-bottom:6px;align-items:center}
+.set-row{display:grid;grid-template-columns:36px 1fr 1.6fr 28px;gap:6px;margin-bottom:6px;align-items:center}
+.w-adj{background:var(--s2);border:1px solid var(--b2);color:var(--text);border-radius:6px;width:26px;height:38px;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue'}
+.w-adj:active{background:var(--accent);color:#0a0a0a}
 .set-num{font-family:'Bebas Neue';font-size:20px;color:var(--m2);text-align:center}
 .del-set{background:none;border:none;color:var(--m2);cursor:pointer;font-size:16px;padding:2px}
 .del-set:hover{color:var(--red)}
@@ -285,6 +287,9 @@ select.inp{appearance:none;cursor:pointer}
       <button class="btn" onclick="confirmPlan()" style="margin-top:0">Zapsat</button>
       <button class="btn-g" onclick="editPlan()" style="margin-top:0">Upravit</button>
     </div>
+  </div>
+  <div id="day-repeat-box" style="display:none;margin-bottom:12px">
+    <button class="btn-g" onclick="repeatLastWorkout()" style="width:100%;padding:10px;border-color:var(--accent);color:var(--accent)">↻ Zopakovat minulý trénink</button>
   </div>
   <button class="btn" onclick="openTrainSheet()">+ ZAPSAT TRÉNINK</button>
   <div class="divider"><span>NEBO</span></div>
@@ -509,6 +514,10 @@ function openDay(date){
     planBox.style.display='none';
   }
 
+  // Zobraz tlačítko "Zopakovat" pokud den nemá trénink ale máme jinou historii
+  const repeatBox=document.getElementById('day-repeat-box');
+  repeatBox.style.display=(!hasTrain&&!isRest&&!plan&&sessions.length>0)?'block':'none';
+
   // Update rest toggle button text
   const restBtn=document.getElementById('rest-toggle-btn');
   if(isRest){
@@ -520,6 +529,43 @@ function openDay(date){
   }
 
   openSheet('day-sheet');
+}
+
+async function repeatLastWorkout(){
+  if(!sessions.length){showToast('Žádná historie k zopakování');return;}
+
+  // Najdi poslední tréninkový den (nejnovější datum v historii)
+  const lastDate=sessions.reduce((max,s)=>s.date>max?s.date:max,sessions[0].date);
+  const lastSessions=sessions.filter(s=>s.date===lastDate);
+
+  // Seskup podle cviku
+  const byEx={};
+  lastSessions.forEach(s=>{
+    if(!byEx[s.ex])byEx[s.ex]={grp:s.grp,sets:[]};
+    byEx[s.ex].sets.push(s);
+  });
+
+  // Zapiš každý cvik s +2.5% progresí na nejtěžší sérii
+  const allRows=[];
+  Object.entries(byEx).forEach(([ex,d])=>{
+    const setsSorted=d.sets.sort((a,b)=>a.serie-b.serie);
+    setsSorted.forEach((s,i)=>{
+      const newW=s.weight?Math.round(s.weight*1.025*2)/2:s.weight;
+      allRows.push({date:selectedDate,grp:d.grp,ex,serie:i+1,reps:s.reps||0,weight:newW||0,note:''});
+    });
+  });
+
+  try{
+    const{data,error}=await sb.from('gym_sessions').insert(allRows).select();
+    if(error)throw error;
+    sessions.unshift(...(data||allRows.map((r,i)=>({...r,id:Date.now()+i}))));
+    renderDaySessions();renderWeek();renderHist();renderProg();
+    openDay(selectedDate); // refresh view
+    showToast('✓ Zopakováno z '+lastDate+' (+2.5%)');
+    updateAIMemory();
+  }catch(e){
+    showToast('Chyba: '+e.message);
+  }
 }
 
 async function confirmPlan(){
@@ -768,9 +814,18 @@ function renderS(){
     <div class="set-row">
       <div class="set-num">${i+1}</div>
       <input class="inp" type="number" placeholder="12" value="${s.r}" oninput="sets[${i}].r=+this.value" inputmode="numeric" style="margin-bottom:0">
-      <input class="inp" type="number" placeholder="80" value="${s.w}" oninput="sets[${i}].w=+this.value" inputmode="decimal" step="0.5" style="margin-bottom:0">
+      <div style="display:flex;align-items:center;gap:3px">
+        <button class="w-adj" onclick="adjWeight(${i},-2.5)">−</button>
+        <input class="inp" type="number" placeholder="80" value="${s.w}" oninput="sets[${i}].w=+this.value" inputmode="decimal" step="0.5" style="margin-bottom:0;text-align:center">
+        <button class="w-adj" onclick="adjWeight(${i},2.5)">+</button>
+      </div>
       <button class="del-set" onclick="remSet(${i})">×</button>
     </div>`).join('');
+}
+function adjWeight(i,delta){
+  const cur=sets[i].w||0;
+  sets[i].w=Math.max(0,Math.round((cur+delta)*2)/2);
+  renderS();
 }
 function addSet(){sets.push({r:'',w:''});renderS();}
 function remSet(i){if(sets.length===1)return;sets.splice(i,1);renderS();}
