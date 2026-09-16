@@ -550,13 +550,16 @@ async function deleteWholeDay(){
   if(!confirm('Smazat všechny záznamy tohoto dne ('+daySessions.length+' sérií)?'))return;
   const ids=daySessions.map(s=>s.id);
   try{
-    await sb.from('gym_sessions').delete().in('id',ids);
+    const{error,data}=await sb.from('gym_sessions').delete().in('id',ids).select();
+    if(error)throw error;
+    console.log('Smazáno v DB:',data?.length,'z',ids.length);
     sessions=sessions.filter(s=>!ids.includes(s.id));
     renderDaySessions();renderWeek();renderHist();renderProg();
     openDay(selectedDate); // refresh view — schová tlačítko smazat, ukáže zapsat
-    showToast('✓ Den smazán');
+    showToast('✓ Den smazán ('+(data?.length||0)+' záznamů)');
     await updateAIMemory();
   }catch(e){
+    console.error('Chyba mazání:',e);
     showToast('Chyba: '+e.message);
   }
 }
@@ -704,7 +707,8 @@ function editEx(idx){
 async function delEx(idx){
   const d=window._sd[idx];
   if(!confirm('Smazat tento cvik?'))return;
-  await sb.from('gym_sessions').delete().in('id',d.ids);
+  const{error}=await sb.from('gym_sessions').delete().in('id',d.ids);
+  if(error){showToast('Chyba: '+error.message);return;}
   sessions=sessions.filter(s=>!d.ids.includes(s.id)&&!d.ids.includes(String(s.id)));
   renderDaySessions();renderWeek();renderHist();renderProg();
   showToast('✓ Smazáno');
@@ -918,14 +922,16 @@ async function delGroup(k){
   if(!confirm('Smazat celý cvik?'))return;
   const[date,grpN,ex]=k.split('|');
   const ids=sessions.filter(s=>s.date===date&&s.grp===grpN&&s.ex===ex).map(s=>s.id);
-  await sb.from('gym_sessions').delete().in('id',ids);
+  const{error}=await sb.from('gym_sessions').delete().in('id',ids);
+  if(error){showToast('Chyba: '+error.message);return;}
   sessions=sessions.filter(s=>!ids.includes(s.id));
   renderHist();renderWeek();showToast('✓ Smazáno');
   await updateAIMemory();
 }
 async function delSet(id){
   if(!confirm('Smazat sérii?'))return;
-  await sb.from('gym_sessions').delete().eq('id',id);
+  const{error}=await sb.from('gym_sessions').delete().eq('id',id);
+  if(error){showToast('Chyba: '+error.message);return;}
   sessions=sessions.filter(s=>s.id!==id&&String(s.id)!==id);
   renderHist();showToast('✓ Smazáno');
   await updateAIMemory();
