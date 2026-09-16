@@ -378,6 +378,45 @@ async function init(){
   },{passive:true});
 
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+  setupRealtimeSync();
+}
+
+// ── REALTIME SYNC ─────────────────────────────────────
+function setupRealtimeSync(){
+  sb.channel('gym_sessions_changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'gym_sessions'},async()=>{
+      await loadSessions();
+      renderAll();
+    })
+    .subscribe();
+
+  sb.channel('rest_days_changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'rest_days'},async()=>{
+      await loadRestDays();
+      renderWeek();
+    })
+    .subscribe();
+
+  sb.channel('week_plans_changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'week_plans'},async()=>{
+      await loadWeekPlans();
+      renderWeek();
+    })
+    .subscribe();
+
+  // Refresh i při návratu do appky (probuzení z pozadí na mobilu)
+  document.addEventListener('visibilitychange',async()=>{
+    if(document.visibilityState==='visible'){
+      await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans()]);
+      renderAll();
+    }
+  });
+}
+
+function renderAll(){
+  renderWeek();renderHist();renderProg();
+  if(document.getElementById('day-sheet').classList.contains('open'))renderDaySessions();
 }
 
 async function loadSessions(){
