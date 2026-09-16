@@ -289,7 +289,10 @@ select.inp{appearance:none;cursor:pointer}
     </div>
   </div>
   <div id="day-repeat-box" style="display:none;margin-bottom:12px">
-    <button class="btn-g" onclick="repeatLastWorkout()" style="width:100%;padding:10px;border-color:var(--accent);color:var(--accent)">↻ Zopakovat minulý trénink</button>
+    <button class="btn-g" id="repeat-btn" onclick="repeatLastWorkout()" style="width:100%;padding:10px;border-color:var(--accent);color:var(--accent)">↻ Zopakovat poslední trénink</button>
+  </div>
+  <div id="day-delete-box" style="display:none;margin-bottom:12px">
+    <button class="btn-g" onclick="deleteWholeDay()" style="width:100%;padding:10px;border-color:var(--red);color:var(--red)">🗑 Smazat celý den</button>
   </div>
   <button class="btn" onclick="openTrainSheet()">+ ZAPSAT TRÉNINK</button>
   <div class="divider"><span>NEBO</span></div>
@@ -516,7 +519,17 @@ function openDay(date){
 
   // Zobraz tlačítko "Zopakovat" pokud den nemá trénink ale máme jinou historii
   const repeatBox=document.getElementById('day-repeat-box');
+  const repeatBtn=document.getElementById('repeat-btn');
   repeatBox.style.display=(!hasTrain&&!isRest&&sessions.length>0)?'block':'none';
+  if(plan&&!hasTrain&&!isRest){
+    repeatBtn.textContent='↻ Zopakovat poslední '+plan.grp.split(',').map(g=>g.trim()).join('+')+' trénink';
+  }else{
+    repeatBtn.textContent='↻ Zopakovat úplně poslední trénink';
+  }
+
+  // Zobraz tlačítko "Smazat celý den" pokud den má trénink
+  const deleteBox=document.getElementById('day-delete-box');
+  deleteBox.style.display=hasTrain?'block':'none';
 
   // Update rest toggle button text
   const restBtn=document.getElementById('rest-toggle-btn');
@@ -531,12 +544,41 @@ function openDay(date){
   openSheet('day-sheet');
 }
 
+async function deleteWholeDay(){
+  const daySessions=sessions.filter(s=>s.date===selectedDate);
+  if(!daySessions.length)return;
+  if(!confirm('Smazat všechny záznamy tohoto dne ('+daySessions.length+' sérií)?'))return;
+  const ids=daySessions.map(s=>s.id);
+  try{
+    await sb.from('gym_sessions').delete().in('id',ids);
+    sessions=sessions.filter(s=>!ids.includes(s.id));
+    renderDaySessions();renderWeek();renderHist();renderProg();
+    openDay(selectedDate); // refresh view — schová tlačítko smazat, ukáže zapsat
+    showToast('✓ Den smazán');
+    updateAIMemory();
+  }catch(e){
+    showToast('Chyba: '+e.message);
+  }
+}
+
 async function repeatLastWorkout(){
   if(!sessions.length){showToast('Žádná historie k zopakování');return;}
 
-  // Najdi poslední tréninkový den (nejnovější datum v historii)
-  const lastDate=sessions.reduce((max,s)=>s.date>max?s.date:max,sessions[0].date);
-  const lastSessions=sessions.filter(s=>s.date===lastDate);
+  const plan=weekPlans[selectedDate];
+  let lastSessions,lastDate;
+
+  if(plan){
+    // Pokud den má AI plán, zopakuj naposledy odcvičené partie z plánu (ne libovolný poslední trénink)
+    const planGrps=plan.grp.split(',').map(g=>g.trim());
+    const relevantSessions=sessions.filter(s=>planGrps.includes(s.grp));
+    if(!relevantSessions.length){showToast('Žádná historie pro '+planGrps.join('+'));return;}
+    lastDate=relevantSessions.reduce((max,s)=>s.date>max?s.date:max,relevantSessions[0].date);
+    lastSessions=relevantSessions.filter(s=>s.date===lastDate);
+  }else{
+    // Bez plánu — vezmi úplně poslední odcvičený den (jakoukoliv partii)
+    lastDate=sessions.reduce((max,s)=>s.date>max?s.date:max,sessions[0].date);
+    lastSessions=sessions.filter(s=>s.date===lastDate);
+  }
 
   // Seskup podle cviku
   const byEx={};
