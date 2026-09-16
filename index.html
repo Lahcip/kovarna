@@ -516,7 +516,7 @@ function openDay(date){
 
   // Zobraz tlačítko "Zopakovat" pokud den nemá trénink ale máme jinou historii
   const repeatBox=document.getElementById('day-repeat-box');
-  repeatBox.style.display=(!hasTrain&&!isRest&&!plan&&sessions.length>0)?'block':'none';
+  repeatBox.style.display=(!hasTrain&&!isRest&&sessions.length>0)?'block':'none';
 
   // Update rest toggle button text
   const restBtn=document.getElementById('rest-toggle-btn');
@@ -559,6 +559,11 @@ async function repeatLastWorkout(){
     const{data,error}=await sb.from('gym_sessions').insert(allRows).select();
     if(error)throw error;
     sessions.unshift(...(data||allRows.map((r,i)=>({...r,id:Date.now()+i}))));
+    // Pokud den měl AI plán, smaž ho — trénink je teď skutečný
+    if(weekPlans[selectedDate]){
+      await sb.from('week_plans').delete().eq('date',selectedDate);
+      delete weekPlans[selectedDate];
+    }
     renderDaySessions();renderWeek();renderHist();renderProg();
     openDay(selectedDate); // refresh view
     showToast('✓ Zopakováno z '+lastDate+' (+2.5%)');
