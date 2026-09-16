@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#0a0a0a">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=Bungee&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -24,7 +24,65 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 
 /* HEADER */
 .hdr{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.logo{font-family:'Bebas Neue';font-size:26px;letter-spacing:2px;color:var(--accent)}
+.logo{
+  font-family:'Bungee',cursive;
+  font-size:24px;
+  letter-spacing:1px;
+  position:relative;
+  display:inline-block;
+  background:linear-gradient(180deg,#fff5cc 0%,#ffde59 15%,#c8f542 40%,#8fd436 65%,#5a9e1f 100%);
+  background-size:100% 250%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:moltenFlow 4s ease-in-out infinite;
+  filter:drop-shadow(0 0 6px rgba(200,245,66,0.5)) drop-shadow(0 0 12px rgba(255,222,89,0.3));
+}
+@keyframes moltenFlow{
+  0%,100%{background-position:0% 0%}
+  50%{background-position:0% 100%}
+}
+.logo::after{
+  content:'';
+  position:absolute;
+  left:8%;
+  bottom:-6px;
+  width:3px;
+  height:8px;
+  background:linear-gradient(180deg,#c8f542,#8fd436);
+  border-radius:0 0 3px 3px;
+  opacity:0;
+  animation:drip1 3.5s ease-in infinite;
+  filter:drop-shadow(0 0 3px rgba(200,245,66,0.6));
+}
+.logo::before{
+  content:'';
+  position:absolute;
+  left:55%;
+  bottom:-6px;
+  width:2.5px;
+  height:6px;
+  background:linear-gradient(180deg,#ffde59,#c8f542);
+  border-radius:0 0 3px 3px;
+  opacity:0;
+  animation:drip2 4.2s ease-in infinite;
+  animation-delay:1.2s;
+  filter:drop-shadow(0 0 3px rgba(255,222,89,0.6));
+}
+@keyframes drip1{
+  0%{opacity:0;transform:translateY(0) scaleY(0.5)}
+  10%{opacity:1;transform:translateY(0) scaleY(1)}
+  60%{opacity:1;transform:translateY(14px) scaleY(1.3)}
+  75%{opacity:0;transform:translateY(20px) scaleY(0.6)}
+  100%{opacity:0;transform:translateY(0)}
+}
+@keyframes drip2{
+  0%{opacity:0;transform:translateY(0) scaleY(0.5)}
+  10%{opacity:1;transform:translateY(0) scaleY(1)}
+  60%{opacity:1;transform:translateY(11px) scaleY(1.3)}
+  75%{opacity:0;transform:translateY(16px) scaleY(0.6)}
+  100%{opacity:0;transform:translateY(0)}
+}
 .hdr-right{display:flex;align-items:center;gap:10px}
 .hdr-date{font-size:11px;color:var(--muted)}
 .icon-btn{background:none;border:1px solid var(--b2);color:var(--muted);border-radius:8px;padding:6px 12px;font-family:"Bebas Neue";font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .15s}
