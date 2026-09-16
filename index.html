@@ -555,7 +555,7 @@ async function deleteWholeDay(){
     renderDaySessions();renderWeek();renderHist();renderProg();
     openDay(selectedDate); // refresh view — schová tlačítko smazat, ukáže zapsat
     showToast('✓ Den smazán');
-    updateAIMemory();
+    await updateAIMemory();
   }catch(e){
     showToast('Chyba: '+e.message);
   }
@@ -609,7 +609,7 @@ async function repeatLastWorkout(){
     renderDaySessions();renderWeek();renderHist();renderProg();
     openDay(selectedDate); // refresh view
     showToast('✓ Zopakováno z '+lastDate+' (+2.5%)');
-    updateAIMemory();
+    await updateAIMemory();
   }catch(e){
     showToast('Chyba: '+e.message);
   }
@@ -708,7 +708,7 @@ async function delEx(idx){
   sessions=sessions.filter(s=>!d.ids.includes(s.id)&&!d.ids.includes(String(s.id)));
   renderDaySessions();renderWeek();renderHist();renderProg();
   showToast('✓ Smazáno');
-  updateAIMemory();
+  await updateAIMemory();
 }
 
 async function toggleRest(){
@@ -770,7 +770,7 @@ async function saveEntry(){
     renderDaySessions();renderWeek();renderHist();renderProg();
     setTimeout(()=>openSheet('day-sheet'),300);
     showToast(isEdit?'✓ Upraveno':'✓ Uloženo');
-    updateAIMemory();
+    await updateAIMemory();
   }catch(e){showToast('Chyba: '+e.message);}
 }
 
@@ -921,14 +921,14 @@ async function delGroup(k){
   await sb.from('gym_sessions').delete().in('id',ids);
   sessions=sessions.filter(s=>!ids.includes(s.id));
   renderHist();renderWeek();showToast('✓ Smazáno');
-  updateAIMemory();
+  await updateAIMemory();
 }
 async function delSet(id){
   if(!confirm('Smazat sérii?'))return;
   await sb.from('gym_sessions').delete().eq('id',id);
   sessions=sessions.filter(s=>s.id!==id&&String(s.id)!==id);
   renderHist();showToast('✓ Smazáno');
-  updateAIMemory();
+  await updateAIMemory();
 }
 async function editSet(id,field,val){
   const update={[field]:field==='reps'?parseInt(val):parseFloat(val)};
