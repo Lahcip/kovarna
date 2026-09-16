@@ -902,31 +902,70 @@ function renderHist(){
   const fl=hf==='Vše'?sessions:sessions.filter(s=>s.grp===hf);
   const l=document.getElementById('hist-list');
   if(!fl.length){l.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Žádné záznamy</div>';return;}
-  const groups={};
-  fl.forEach(s=>{const k=s.date+'|'+s.grp+'|'+s.ex;if(!groups[k])groups[k]={date:s.date,grp:s.grp,ex:s.ex,sets:[]};groups[k].sets.push(s);});
-  l.innerHTML=Object.entries(groups).map(([k,g])=>{
-    const mx=Math.max(...g.sets.map(s=>s.weight||0));
-    const tr=g.sets.reduce((a,s)=>a+(s.reps||0),0);
-    const exp=expH===k;
-    return `<div class="hi">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px" onclick="togH('${k}')">
-        <div><span class="tag">${g.grp}</span><span style="font-size:14px;font-weight:500;margin-left:8px">${g.ex}</span></div>
-        <button class="s-btn del" onclick="event.stopPropagation();delGroup('${k}')">Smazat</button>
+
+  // Seskup podle dne, uvnitř podle cviku
+  const dayGroups={};
+  fl.forEach(s=>{
+    if(!dayGroups[s.date])dayGroups[s.date]={date:s.date,exercises:{}};
+    const ek=s.grp+'|'+s.ex;
+    if(!dayGroups[s.date].exercises[ek])dayGroups[s.date].exercises[ek]={grp:s.grp,ex:s.ex,sets:[]};
+    dayGroups[s.date].exercises[ek].sets.push(s);
+  });
+
+  // Seřaď dny sestupně (nejnovější první) — parsuj DD.MM.YYYY
+  const parseDate=d=>{const[dd,mm,yy]=d.split('.').map(x=>parseInt(x));return new Date(yy,mm-1,dd).getTime();};
+  const sortedDays=Object.values(dayGroups).sort((a,b)=>parseDate(b.date)-parseDate(a.date));
+
+  l.innerHTML=sortedDays.map(day=>{
+    const exList=Object.entries(day.exercises);
+    const dayGrps=[...new Set(exList.map(([k,e])=>e.grp))];
+    const grpChips=dayGrps.map(g=>`<span class="tag" style="background:${GRP_COLORS[g]}22;color:${GRP_COLORS[g]};margin-right:4px">${g}</span>`).join('');
+
+    return `<div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b2);margin-bottom:8px">
+        <span style="font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;color:var(--text)">${day.date}</span>
+        <div>${grpChips}</div>
       </div>
-      <div style="font-size:12px;color:var(--muted);cursor:pointer" onclick="togH('${k}')">${g.date} · ${g.sets.length} sérií · max ${mx}kg · ${tr} opak.</div>
-      ${exp?`<div style="margin-top:10px;background:var(--s2);border-radius:8px;padding:10px 12px">
-        ${g.sets.map(s=>`<div style="display:flex;gap:8px;font-size:12px;color:var(--muted);padding:4px 0;align-items:center;border-bottom:1px solid var(--b1)">
-          <span style="min-width:50px;color:var(--m2)">Série ${s.serie}</span>
-          <input type="number" value="${s.reps||0}" onchange="editSet('${s.id}','reps',this.value)" style="width:50px;background:var(--bg);border:1px solid var(--b2);color:var(--text);border-radius:4px;padding:3px 6px;font-size:12px;text-align:center">
-          <span style="color:var(--m2)">opak.</span>
-          <input type="number" value="${s.weight||0}" step="0.5" onchange="editSet('${s.id}','weight',this.value)" style="width:54px;background:var(--bg);border:1px solid var(--b2);color:var(--text);border-radius:4px;padding:3px 6px;font-size:12px;text-align:center">
-          <span style="color:var(--m2)">kg</span>
-          <button onclick="delSet('${s.id}')" style="background:none;border:none;color:var(--m2);cursor:pointer;margin-left:auto">×</button>
-        </div>`).join('')}
-      </div>`:''}
+      ${exList.map(([k,g])=>{
+        const mx=Math.max(...g.sets.map(s=>s.weight||0));
+        const tr=g.sets.reduce((a,s)=>a+(s.reps||0),0);
+        const exp=expH===k+'|'+day.date;
+        const hkey=k+'|'+day.date;
+        return `<div class="hi" style="padding:8px 0">
+          <div style="display:flex;justify-content:space-between;align-items:center" onclick="togH('${hkey}')">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:14px;font-weight:500;margin-bottom:2px">${g.ex}</div>
+              <div style="font-size:11px;color:var(--muted)">${g.sets.length} sérií · max ${mx}kg · ${tr} opak.</div>
+            </div>
+            <button onclick="event.stopPropagation();delGroupByKey('${k}','${day.date}')" style="background:none;border:none;color:var(--m2);cursor:pointer;font-size:16px;padding:4px 8px;flex-shrink:0">🗑</button>
+          </div>
+          ${exp?`<div style="margin-top:8px;background:var(--s2);border-radius:8px;padding:8px 10px">
+            ${g.sets.map(s=>`<div style="display:flex;gap:8px;font-size:12px;color:var(--muted);padding:4px 0;align-items:center;border-bottom:1px solid var(--b1)">
+              <span style="min-width:44px;color:var(--m2)">S${s.serie}</span>
+              <input type="number" value="${s.reps||0}" onchange="editSet('${s.id}','reps',this.value)" style="width:46px;background:var(--bg);border:1px solid var(--b2);color:var(--text);border-radius:4px;padding:3px 4px;font-size:12px;text-align:center">
+              <span style="color:var(--m2);font-size:11px">op.</span>
+              <input type="number" value="${s.weight||0}" step="0.5" onchange="editSet('${s.id}','weight',this.value)" style="width:50px;background:var(--bg);border:1px solid var(--b2);color:var(--text);border-radius:4px;padding:3px 4px;font-size:12px;text-align:center">
+              <span style="color:var(--m2);font-size:11px">kg</span>
+              <button onclick="delSet('${s.id}')" style="background:none;border:none;color:var(--m2);cursor:pointer;margin-left:auto">×</button>
+            </div>`).join('')}
+          </div>`:''}
+        </div>`;
+      }).join('')}
     </div>`;
   }).join('');
 }
+
+async function delGroupByKey(k,date){
+  const[grpN,ex]=k.split('|');
+  const ids=sessions.filter(s=>s.date===date&&s.grp===grpN&&s.ex===ex).map(s=>s.id);
+  if(!confirm('Smazat '+ex+'?'))return;
+  const{error}=await sb.from('gym_sessions').delete().in('id',ids);
+  if(error){showToast('Chyba: '+error.message);return;}
+  sessions=sessions.filter(s=>!ids.includes(s.id));
+  renderHist();renderWeek();showToast('✓ Smazáno');
+  await updateAIMemory();
+}
+
 function togH(k){expH=expH===k?null:k;renderHist();}
 function fH(g,el){hf=g;renderHist();}
 async function delGroup(k){
