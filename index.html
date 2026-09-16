@@ -666,6 +666,7 @@ async function delEx(idx){
   sessions=sessions.filter(s=>!d.ids.includes(s.id)&&!d.ids.includes(String(s.id)));
   renderDaySessions();renderWeek();renderHist();renderProg();
   showToast('✓ Smazáno');
+  updateAIMemory();
 }
 
 async function toggleRest(){
@@ -878,12 +879,14 @@ async function delGroup(k){
   await sb.from('gym_sessions').delete().in('id',ids);
   sessions=sessions.filter(s=>!ids.includes(s.id));
   renderHist();renderWeek();showToast('✓ Smazáno');
+  updateAIMemory();
 }
 async function delSet(id){
   if(!confirm('Smazat sérii?'))return;
   await sb.from('gym_sessions').delete().eq('id',id);
   sessions=sessions.filter(s=>s.id!==id&&String(s.id)!==id);
   renderHist();showToast('✓ Smazáno');
+  updateAIMemory();
 }
 async function editSet(id,field,val){
   const update={[field]:field==='reps'?parseInt(val):parseFloat(val)};
