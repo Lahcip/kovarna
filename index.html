@@ -365,7 +365,8 @@ let activeView='week';
 async function init(){
   document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('cs-CZ');
   renderG();renderE();renderS();
-  await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans()]);
+  await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans(),loadCustomExercises()]);
+  renderE();
   renderWeek();renderHist();renderProg();
 
   // Swipe between weeks
@@ -730,11 +731,24 @@ function renderE(){
   document.getElementById('esel').innerHTML=ex.map(e=>`<option>${e}</option>`).join('');
   updPrev();
 }
-function addCustom(){
+async function loadCustomExercises(){
+  const{data}=await sb.from('custom_exercises').select('*');
+  custom={};
+  (data||[]).forEach(r=>{
+    if(!custom[r.grp])custom[r.grp]=[];
+    custom[r.grp].push(r.name);
+  });
+}
+
+async function addCustom(){
   const v=document.getElementById('newinp').value.trim();
   if(!v)return;
   if(!custom[grp])custom[grp]=[];
-  custom[grp].push(v);renderE();
+  if(!custom[grp].includes(v)){
+    custom[grp].push(v);
+    try{await sb.from('custom_exercises').insert({grp,name:v});}catch(e){}
+  }
+  renderE();
   document.getElementById('esel').value=v;
   document.getElementById('newinp').value='';updPrev();
 }
