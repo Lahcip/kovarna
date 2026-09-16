@@ -603,7 +603,12 @@ async function repeatLastWorkout(){
   try{
     const{data,error}=await sb.from('gym_sessions').insert(allRows).select();
     if(error)throw error;
-    sessions.unshift(...(data||allRows.map((r,i)=>({...r,id:Date.now()+i}))));
+    if(data&&data.length){
+      sessions.unshift(...data);
+    }else{
+      console.warn('Insert select vrátil prázdno, reloaduji sessions ze serveru');
+      await loadSessions();
+    }
     // Pokud den měl AI plán, smaž ho — trénink je teď skutečný
     if(weekPlans[selectedDate]){
       await sb.from('week_plans').delete().eq('date',selectedDate);
@@ -761,7 +766,13 @@ async function saveEntry(){
     const rows=vs.map((s,i)=>({date:selectedDate,grp,ex,serie:i+1,reps:s.r||0,weight:s.w||0,note:i===0?note:''}));
     const{data,error}=await sb.from('gym_sessions').insert(rows).select();
     if(error)throw error;
-    sessions.unshift(...(data||rows.map((r,i)=>({...r,id:Date.now()+i}))));
+    if(data&&data.length){
+      sessions.unshift(...data);
+    }else{
+      // Fallback — pokud select() po insertu nevrátil data (RLS/jiný důvod), znovu načti celou historii ze serveru
+      console.warn('Insert select vrátil prázdno, reloaduji sessions ze serveru');
+      await loadSessions();
+    }
     sets=[{r:'',w:''}];document.getElementById('note').value='';renderS();
     closeSheet('train-sheet');
     document.getElementById('train-title').textContent='ZAPSAT TRÉNINK';
