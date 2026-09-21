@@ -35,7 +35,24 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
   color:var(--accent);
   text-shadow:0 0 12px rgba(200,245,66,0.30);
 }
-.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.food-top{padding:0 16px 10px;flex-shrink:0}
+.food-sum{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:14px 16px}
+.food-prot{font-family:'Bebas Neue';font-size:34px;color:var(--accent);line-height:1}
+.food-prot small{font-family:'DM Sans';font-size:13px;color:var(--muted)}
+.food-bar{height:8px;background:var(--s2);border-radius:4px;margin:10px 0 8px;overflow:hidden}
+.food-bar div{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+.food-meta{font-size:12px;color:var(--muted)}
+.food-item{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--b1);border-left:4px solid var(--m2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.food-item .fi-main{flex:1;min-width:0}
+.food-item .fi-name{font-size:14px;color:var(--text)}
+.food-item .fi-reason{font-size:11px;color:var(--muted);margin-top:2px}
+.food-item .fi-p{font-family:'Bebas Neue';font-size:22px;text-align:right;line-height:1}
+.food-item .fi-k{font-size:10px;color:var(--muted);text-align:right}
+.food-item .fi-del{background:none;border:none;color:var(--m2);font-size:15px;cursor:pointer;padding:4px}
+.food-empty{text-align:center;color:var(--muted);font-size:13px;padding:30px 0}
+.food-legend{display:flex;gap:12px;justify-content:center;font-size:10px;color:var(--muted);padding:4px 0 8px}
+.food-legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle}
 .hdr-date{font-size:11px;color:var(--muted)}
 .icon-btn{background:none;border:1px solid var(--b2);color:var(--muted);border-radius:8px;padding:6px 12px;font-family:"Bebas Neue";font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .15s}
 .icon-btn:hover,.icon-btn.active{border-color:var(--accent);color:var(--accent)}
@@ -185,6 +202,7 @@ select.inp{appearance:none;cursor:pointer}
     <button class="icon-btn active" id="btn-week" onclick="showView('week')">TÝDEN</button>
     <button class="icon-btn" id="btn-hist" onclick="showView('hist')">HISTORIE</button>
     <button class="icon-btn" id="btn-prog" onclick="showView('prog')">PROGRES</button>
+    <button class="icon-btn" id="btn-food" onclick="showView('food')">STRAVA</button>
   </div>
 </div>
 
@@ -209,6 +227,30 @@ select.inp{appearance:none;cursor:pointer}
     <div class="ai-input-row">
       <input class="ai-input" id="ai-input" placeholder="Zeptej se AI trenéra..." onkeydown="if(event.key==='Enter')sendAI()">
       <button class="ai-send" id="ai-send" onclick="sendAI()">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOD VIEW -->
+<div id="view-food" style="flex:1;display:none;flex-direction:column;min-height:0">
+  <div class="food-top">
+    <div class="week-nav">
+      <button class="week-nav-btn" onclick="foodDay(-1)">←</button>
+      <span class="week-range" id="food-date"></span>
+      <button class="week-nav-btn" onclick="foodDay(1)">→</button>
+    </div>
+    <div class="food-sum">
+      <div class="food-prot"><span id="food-prot-val">0</span> <small>/ <span id="food-goal"></span> g bílkovin</small></div>
+      <div class="food-bar"><div id="food-bar-fill" style="width:0"></div></div>
+      <div class="food-meta" id="food-meta"></div>
+    </div>
+  </div>
+  <div class="sub-area"><div id="food-list"></div></div>
+  <div class="ai-chat">
+    <div class="food-legend"><span><i style="background:#c8f542"></i>prospěšné</span><span><i style="background:#f5c542"></i>OK</span><span><i style="background:#f54242"></i>škodí</span></div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="food-input" placeholder="Co jsi jedl? např. 3 vejce a 2 rohlíky" onkeydown="if(event.key==='Enter')addFood()">
+      <button class="ai-send" id="food-send" onclick="addFood()">+</button>
     </div>
   </div>
 </div>
@@ -277,6 +319,7 @@ select.inp{appearance:none;cursor:pointer}
   <button class="bnav-btn active" id="bnav-week" onclick="showView('week')">Týden</button>
   <button class="bnav-btn" id="bnav-hist" onclick="showView('hist')">Historie</button>
   <button class="bnav-btn" id="bnav-prog" onclick="showView('prog')">Progres</button>
+  <button class="bnav-btn" id="bnav-food" onclick="showView('food')">Strava</button>
 </div>
 
 <!-- OVERLAY -->
@@ -383,7 +426,7 @@ let activeView='week';
 async function init(){
   document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('cs-CZ');
   renderG();renderE();renderS();
-  await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans(),loadCustomExercises()]);
+  await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans(),loadCustomExercises(),loadFood()]);
   renderE();
   renderWeek();renderHist();renderProg();
 
@@ -424,11 +467,18 @@ function setupRealtimeSync(){
     })
     .subscribe();
 
+  sb.channel('food_log_changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'food_log'},async()=>{
+      await loadFood();
+      if(activeView==='food')renderFood();
+    })
+    .subscribe();
+
   // Refresh i při návratu do appky (probuzení z pozadí na mobilu)
   document.addEventListener('visibilitychange',async()=>{
     if(document.visibilityState==='visible'){
-      await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans()]);
-      renderAll();
+      await Promise.all([loadSessions(),loadRestDays(),loadWeekPlans(),loadFood()]);
+      renderAll();if(activeView==='food')renderFood();
     }
   });
 }
@@ -461,7 +511,7 @@ function grpsFor(date){return[...new Set(sessions.filter(s=>s.date===date).map(s
 // VIEW SWITCH
 function showView(v){
   activeView=v;
-  ['week','hist','prog'].forEach(n=>{
+  ['week','hist','prog','food'].forEach(n=>{
     const el=document.getElementById('view-'+n);
     el.style.display=n===v?'flex':'none';
     document.getElementById('btn-'+n)?.classList.toggle('active',n===v);
@@ -469,6 +519,7 @@ function showView(v){
   });
   if(v==='hist')renderHist();
   if(v==='prog')renderProg();
+  if(v==='food')renderFood();
 }
 
 // WEEK
@@ -1231,7 +1282,8 @@ async function sendAI(quickMsg){
     const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
     const grpS=Object.entries(gld).map(([g,d])=>g+': naposledy '+d+', celkem '+(gc[g]||0)+' tréninkových dnů').join('\n');
     const exS=ae.map(e=>e+': max '+(emw[e]||0)+'kg').join('\n');
-    const systemMsg='Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Tréninkový styl uživatele: max 2-3 série na cvik, těžké váhy, do selhání (5-8 opakování), ne 4+ lehčích sérií. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
+    const todayProt=Math.round(foodLog.filter(f=>f.date===today).reduce((a,f)=>a+(+f.protein||0),0));
+    const systemMsg='Dnes snědeno '+todayProt+' g bílkovin z cíle '+PROTEIN_GOAL+' g. Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Tréninkový styl uživatele: max 2-3 série na cvik, těžké váhy, do selhání (5-8 opakování), ne 4+ lehčích sérií. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
     aiHistory.push({role:'user',content:msg});
     if(aiHistory.length>10)aiHistory=aiHistory.slice(-10);
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
@@ -1249,6 +1301,75 @@ async function sendAI(quickMsg){
     aiHistory.pop();
   }
   send.disabled=false;send.textContent='→';
+}
+
+// ── STRAVA ─────────────────────────────────────
+const PROTEIN_GOAL=175; // ~2 g/kg při 88 kg
+const FOOD_COL={green:'#c8f542',yellow:'#f5c542',red:'#f54242'};
+let foodLog=[];let foodDate=new Date();
+function escH(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function loadFood(){
+  const{data}=await sb.from('food_log').select('*').order('created_at',{ascending:true}).limit(2000);
+  foodLog=data||[];
+}
+function foodDay(d){foodDate.setDate(foodDate.getDate()+d);renderFood();}
+function renderFood(){
+  const d=ds(foodDate),today=ds(new Date());
+  document.getElementById('food-date').textContent=(d===today?'Dnes · ':'')+d;
+  const items=foodLog.filter(f=>f.date===d);
+  const prot=Math.round(items.reduce((a,f)=>a+(+f.protein||0),0));
+  const kcal=Math.round(items.reduce((a,f)=>a+(+f.kcal||0),0));
+  document.getElementById('food-prot-val').textContent=prot;
+  document.getElementById('food-goal').textContent=PROTEIN_GOAL;
+  const pct=Math.min(100,prot/PROTEIN_GOAL*100);
+  const fill=document.getElementById('food-bar-fill');
+  fill.style.width=pct+'%';
+  fill.style.background=pct>=100?'#c8f542':pct>=60?'#f5c542':'#f54242';
+  const left=PROTEIN_GOAL-prot;
+  const train=trainDates().has(d)?' · 🏋️ tréninkový den':'';
+  document.getElementById('food-meta').textContent=kcal+' kcal · '+(left>0?'zbývá '+left+' g':'✓ cíl splněn')+train;
+  const list=document.getElementById('food-list');
+  if(!items.length){list.innerHTML='<div class="food-empty">Zatím nic. Napiš dole co jsi jedl.</div>';return;}
+  list.innerHTML=items.map(f=>{
+    const c=FOOD_COL[f.rating]||'#3a3a3a';
+    return `<div class="food-item" style="border-left-color:${c}">
+      <div class="fi-main"><div class="fi-name">${escH(f.name)}</div><div class="fi-reason">${escH(f.reason)}</div></div>
+      <div><div class="fi-p" style="color:${c}">${Math.round(+f.protein||0)} g</div><div class="fi-k">${Math.round(+f.kcal||0)} kcal</div></div>
+      <button class="fi-del" onclick="delFood('${f.id}')">🗑</button>
+    </div>`;
+  }).join('');
+}
+async function addFood(){
+  const input=document.getElementById('food-input'),btn=document.getElementById('food-send');
+  const txt=input.value.trim();if(!txt)return;
+  btn.disabled=true;btn.textContent='…';
+  try{
+    const sys='Jsi výživový poradce. Uživatel: muž 88 kg, cíl recomp (nabrat svaly a zároveň spálit tuk), těžký silový trénink, artróza kyčle (protizánětlivá strava je plus). Z popisu jídla odhadni gramy bílkovin a kcal. Pokud chybí množství, ber běžnou českou porci. Ohodnoť, jak je jídlo prospěšné pro jeho cíl: "green" = výborné (hodně kvalitních bílkovin, málo zpracované, dobrý poměr bílkovin ke kcal), "yellow" = OK/průměrné, "red" = spíš škodí (cukr, smažené, alkohol, ultrazpracované, hodně kcal a málo bílkovin). Odpověz POUZE jedním JSON objektem, žádný jiný text: {"name":"krátký český název","protein":číslo,"kcal":číslo,"rating":"green|yellow|red","reason":"max 8 slov proč"}';
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
+      body:JSON.stringify({model:'groq/compound',messages:[{role:'system',content:sys},{role:'user',content:txt}],max_tokens:300,temperature:0.2})
+    });
+    if(!r.ok)throw new Error('Groq '+r.status);
+    const data=await r.json();
+    const raw=data.choices?.[0]?.message?.content||'';
+    const m=raw.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('AI nevrátila data');
+    const j=JSON.parse(m[0]);
+    const row={date:ds(foodDate),name:j.name||txt,raw:txt,protein:+j.protein||0,kcal:+j.kcal||0,rating:['green','yellow','red'].includes(j.rating)?j.rating:'yellow',reason:j.reason||''};
+    const{data:ins,error}=await sb.from('food_log').insert(row).select();
+    if(error)throw new Error(error.message);
+    if(ins&&ins.length)foodLog.push(ins[0]);else await loadFood();
+    input.value='';
+    renderFood();
+    showToast('+'+Math.round(row.protein)+' g bílkovin');
+  }catch(e){showToast('Chyba: '+e.message);}
+  btn.disabled=false;btn.textContent='+';
+}
+async function delFood(id){
+  const{error}=await sb.from('food_log').delete().eq('id',id);
+  if(error){showToast('Chyba mazání');return;}
+  foodLog=foodLog.filter(f=>f.id!==id);renderFood();
 }
 
 // AI MEMORY
