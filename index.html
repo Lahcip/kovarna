@@ -1286,9 +1286,9 @@ async function sendAI(quickMsg){
     const systemMsg='Dnes snědeno '+todayProt+' g bílkovin z cíle '+PROTEIN_GOAL+' g. Jsi osobní fitness trenér. Artróza kyčle 3. stupně vlevo, ischias. Zakázané: mrtvý tah, dřep s velkou vahou, výpady. Tréninkový styl uživatele: max 2-3 série na cvik, těžké váhy, do selhání (5-8 opakování), ne 4+ lehčích sérií. Doporučuj VÝHRADNĚ z uvedených cviků. Česky, max 6 vět. Dnes: '+today+', zítra: '+tomorrow.toLocaleDateString('cs-CZ')+', streak: '+streak+' dní.\n\nPARTIE:\n'+grpS+'\n\nCVIKY:\n'+exS;
     aiHistory.push({role:'user',content:msg});
     if(aiHistory.length>10)aiHistory=aiHistory.slice(-10);
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const r=await fetch('/api/groq',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'groq/compound',messages:[{role:'system',content:systemMsg},...aiHistory],max_tokens:400,temperature:0.5})
     });
     if(!r.ok)throw new Error(await r.text());
@@ -1345,9 +1345,9 @@ async function addFood(){
   btn.disabled=true;btn.textContent='…';
   try{
     const sys='Jsi výživový poradce. Uživatel: muž 88 kg, cíl recomp (nabrat svaly a zároveň spálit tuk), těžký silový trénink, artróza kyčle (protizánětlivá strava je plus). Z popisu jídla odhadni gramy bílkovin a kcal. Pokud chybí množství, ber běžnou českou porci. Ohodnoť, jak je jídlo prospěšné pro jeho cíl: "green" = výborné (hodně kvalitních bílkovin, málo zpracované, dobrý poměr bílkovin ke kcal), "yellow" = OK/průměrné, "red" = spíš škodí (cukr, smažené, alkohol, ultrazpracované, hodně kcal a málo bílkovin). Odpověz POUZE jedním JSON objektem, žádný jiný text: {"name":"krátký český název","protein":číslo,"kcal":číslo,"rating":"green|yellow|red","reason":"max 8 slov proč"}';
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const r=await fetch('/api/groq',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer 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'},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'groq/compound',messages:[{role:'system',content:sys},{role:'user',content:txt}],max_tokens:300,temperature:0.2})
     });
     if(!r.ok)throw new Error('Groq '+r.status);
