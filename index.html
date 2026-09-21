@@ -43,6 +43,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .food-bar{height:8px;background:var(--s2);border-radius:4px;margin:10px 0 8px;overflow:hidden}
 .food-bar div{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
 .food-meta{font-size:12px;color:var(--muted)}
+.food-row{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px}
+.food-row .fr-l{font-size:12px;color:var(--muted)}
+.food-row .fr-v{font-family:'Bebas Neue';font-size:20px;color:var(--text)}
+.food-row .fr-v small{font-family:'DM Sans';font-size:11px;color:var(--muted)}
+.food-verdict{margin-top:12px;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.4}
+.food-verdict b{display:block;font-family:'Bebas Neue';font-size:17px;letter-spacing:.5px;font-weight:400;margin-bottom:2px}
+.food-item .fi-parts{font-size:10.5px;color:#777;margin-top:3px}
 .food-item{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--b1);border-left:4px solid var(--m2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
 .food-item .fi-main{flex:1;min-width:0}
 .food-item .fi-name{font-size:14px;color:var(--text)}
@@ -240,9 +247,12 @@ select.inp{appearance:none;cursor:pointer}
       <button class="week-nav-btn" onclick="foodDay(1)">→</button>
     </div>
     <div class="food-sum">
-      <div class="food-prot"><span id="food-prot-val">0</span> <small>/ <span id="food-goal"></span> g bílkovin</small></div>
+      <div class="food-row"style="margin-top:0"><span class="fr-l">Bílkoviny</span><span class="fr-v"><span id="food-prot-val">0</span> <small>/ <span id="food-goal"></span> g</small></span></div>
       <div class="food-bar"><div id="food-bar-fill" style="width:0"></div></div>
+      <div class="food-row"><span class="fr-l">Kalorie</span><span class="fr-v"><span id="food-kcal-val">0</span> <small>/ <span id="food-kcal-goal"></span> kcal</small></span></div>
+      <div class="food-bar"><div id="food-kbar-fill" style="width:0"></div></div>
       <div class="food-meta" id="food-meta"></div>
+      <div class="food-verdict" id="food-verdict"></div>
     </div>
   </div>
   <div class="sub-area"><div id="food-list"></div></div>
@@ -1304,7 +1314,10 @@ async function sendAI(quickMsg){
 }
 
 // ── STRAVA ─────────────────────────────────────
-const PROTEIN_GOAL=175; // ~2 g/kg při 88 kg
+const PROTEIN_GOAL=180; // ~2 g/kg při 91 kg
+const KCAL_TRAIN=2600, KCAL_REST=2350;
+function isTrainDay(d){return trainDates().has(d)||(!!weekPlans[d]&&!restDays.includes(d));}
+function kcalGoal(d){return isTrainDay(d)?KCAL_TRAIN:KCAL_REST;}
 const FOOD_COL={green:'#c8f542',yellow:'#f5c542',red:'#f54242'};
 let foodLog=[];let foodDate=new Date();
 function escH(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -1319,21 +1332,46 @@ function renderFood(){
   const items=foodLog.filter(f=>f.date===d);
   const prot=Math.round(items.reduce((a,f)=>a+(+f.protein||0),0));
   const kcal=Math.round(items.reduce((a,f)=>a+(+f.kcal||0),0));
+  const kG=kcalGoal(d);
   document.getElementById('food-prot-val').textContent=prot;
   document.getElementById('food-goal').textContent=PROTEIN_GOAL;
-  const pct=Math.min(100,prot/PROTEIN_GOAL*100);
-  const fill=document.getElementById('food-bar-fill');
-  fill.style.width=pct+'%';
-  fill.style.background=pct>=100?'#c8f542':pct>=60?'#f5c542':'#f54242';
-  const left=PROTEIN_GOAL-prot;
-  const train=trainDates().has(d)?' · 🏋️ tréninkový den':'';
-  document.getElementById('food-meta').textContent=kcal+' kcal · '+(left>0?'zbývá '+left+' g':'✓ cíl splněn')+train;
+  document.getElementById('food-kcal-val').textContent=kcal;
+  document.getElementById('food-kcal-goal').textContent=kG;
+  const pPct=Math.min(100,prot/PROTEIN_GOAL*100);
+  const kPct=Math.min(100,kcal/kG*100);
+  const pf=document.getElementById('food-bar-fill');
+  pf.style.width=pPct+'%';pf.style.background=pPct>=100?'#c8f542':pPct>=60?'#f5c542':'#f54242';
+  const kf=document.getElementById('food-kbar-fill');
+  kf.style.width=kPct+'%';kf.style.background=kcal>kG*1.1?'#f54242':kPct>=85?'#c8f542':'#42b8f5';
+  document.getElementById('food-meta').textContent=(isTrainDay(d)?'🏋️ tréninkový den':'😴 volný den')+' · cíl '+kG+' kcal';
+
+  // VERDIKT — u dneška počítá s tím, kolik by mělo být snědeno podle denní doby
+  const v=document.getElementById('food-verdict');
+  if(!items.length){v.style.display='none';}else{
+    v.style.display='block';
+    let frac=1;
+    if(d===today){const h=new Date().getHours()+new Date().getMinutes()/60;frac=Math.max(.25,Math.min(1,(h-7)/13));}
+    const expK=kG*frac, expP=PROTEIN_GOAL*frac;
+    const greenK=items.filter(f=>f.rating==='green').reduce((a,f)=>a+(+f.kcal||0),0);
+    const redK=items.filter(f=>f.rating==='red').reduce((a,f)=>a+(+f.kcal||0),0);
+    const issues=[];
+    if(kcal<expK*0.8)issues.push('Jíš málo — '+(d===today?'do večera ':'')+'chybí ~'+Math.round((kG-kcal)/50)*50+' kcal. Na recomp potřebuješ energii na regeneraci.');
+    else if(kcal>kG*1.1)issues.push('Přes cíl o '+Math.round(kcal-kG)+' kcal.');
+    if(prot<expP*0.8)issues.push('Málo bílkovin — chybí '+Math.round(PROTEIN_GOAL-prot)+' g.');
+    if(kcal>0&&redK/kcal>0.25)issues.push('Hodně kalorií z nevhodných jídel ('+Math.round(redK/kcal*100)+' %).');
+    const good=!issues.length;
+    const col=good?'#c8f542':issues.length>1?'#f54242':'#f5c542';
+    const title=good?(d===today&&frac<1?'✓ Na dobré cestě':'✓ Den splněn'):(issues.length>1?'✗ Takhle ne':'⚠ Skoro');
+    const extra=good?('Bílkoviny i energie sedí'+(kcal>0?', '+Math.round(greenK/kcal*100)+' % kcal z prospěšných jídel.':'.')):issues.join(' ');
+    v.style.background=col+'14';v.style.border='1px solid '+col+'55';
+    v.innerHTML='<b style="color:'+col+'">'+title+'</b><span style="color:var(--text)">'+escH(extra)+'</span>';
+  }
   const list=document.getElementById('food-list');
   if(!items.length){list.innerHTML='<div class="food-empty">Zatím nic. Napiš dole co jsi jedl.</div>';return;}
   list.innerHTML=items.map(f=>{
     const c=FOOD_COL[f.rating]||'#3a3a3a';
     return `<div class="food-item" style="border-left-color:${c}">
-      <div class="fi-main"><div class="fi-name">${escH(f.name)}</div><div class="fi-reason">${escH(f.reason)}</div></div>
+      <div class="fi-main" onclick="editFood('${f.id}')"><div class="fi-name">${escH(f.name)}</div><div class="fi-reason">${escH(f.reason)}</div>${f.parts?`<div class="fi-parts">${escH(f.parts)}</div>`:''}</div>
       <div><div class="fi-p" style="color:${c}">${Math.round(+f.protein||0)} g</div><div class="fi-k">${Math.round(+f.kcal||0)} kcal</div></div>
       <button class="fi-del" onclick="delFood('${f.id}')">🗑</button>
     </div>`;
@@ -1344,11 +1382,11 @@ async function addFood(){
   const txt=input.value.trim();if(!txt)return;
   btn.disabled=true;btn.textContent='…';
   try{
-    const sys='Jsi přísný výživový poradce. Uživatel: muž 88 kg, cíl recomp (nabrat svaly a zároveň spálit tuk), těžký silový trénink, artróza kyčle (protizánětlivá strava je plus, zánětlivá mínus). Z popisu jídla odhadni gramy bílkovin a kcal. Pokud chybí množství, ber běžnou českou porci. Hodnoť CELÉ jídlo přísně, nejhorší složka táhne hodnocení dolů. "green" POUZE když je vše kvalitní a málo zpracované: libové maso, ryby, vejce, tvaroh, skyr, řecký jogurt, luštěniny vařené doma, zelenina, ovoce, ovesné vločky, rýže, brambory, celozrnné pečivo. "yellow" = obsahuje něco zpracovaného nebo průměrného: uzeniny (párek, klobása, salám, šunka z obchodu), fazole v omáčce z plechovky, bílé pečivo, sýry s vysokým tukem, protein tyčinky, hotová jídla. "red" = sladkosti, sladké pití, smažené, fast food, alkohol, chipsy, jídlo s vysokými kcal a nízkými bílkovinami. Kvalitní bílkoviny NEZACHRÁNÍ jídlo se zpracovanou složkou, to je vždy maximálně yellow. Odpověz POUZE jedním JSON objektem, žádný jiný text: {"name":"krátký český název","protein":číslo,"kcal":číslo,"rating":"green|yellow|red","reason":"max 8 slov, zmiň konkrétní složku co hodnocení ovlivnila"}';
+    const sys='Jsi přísný výživový poradce. Uživatel: muž 88 kg, cíl recomp (nabrat svaly a zároveň spálit tuk), těžký silový trénink, artróza kyčle (protizánětlivá strava je plus, zánětlivá mínus). Z popisu jídla odhadni gramy bílkovin a kcal. Pokud chybí množství, ber běžnou českou porci. Hodnoť CELÉ jídlo přísně, nejhorší složka táhne hodnocení dolů. "green" POUZE když je vše kvalitní a málo zpracované: libové maso, ryby, vejce, tvaroh, skyr, řecký jogurt, luštěniny vařené doma, zelenina, ovoce, ovesné vločky, rýže, brambory, celozrnné pečivo. "yellow" = obsahuje něco zpracovaného nebo průměrného: uzeniny (párek, klobása, salám, šunka z obchodu), fazole v omáčce z plechovky, bílé pečivo, sýry s vysokým tukem, protein tyčinky, hotová jídla. "red" = sladkosti, sladké pití, smažené, fast food, alkohol, chipsy, jídlo s vysokými kcal a nízkými bílkovinami. Kvalitní bílkoviny NEZACHRÁNÍ jídlo se zpracovanou složkou, to je vždy maximálně yellow. Odpověz POUZE jedním JSON objektem, žádný jiný text: {"name":"krátký český název","parts":[{"item":"složka s množstvím, např. 4 vejce","protein":číslo,"kcal":číslo}],"protein":číslo,"kcal":číslo,"rating":"green|yellow|red","reason":"max 8 slov, zmiň konkrétní složku co hodnocení ovlivnila"}. Postup: rozepiš KAŽDOU složku zvlášť s realistickým množstvím a hodnotami (nepodhodnocuj — např. 1 vejce ~75 kcal, párek ~250 kcal, krajíc chleba ~100 kcal), protein a kcal celku MUSÍ být součet složek.';
     const r=await fetch('/api/groq',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'groq/compound',messages:[{role:'system',content:sys},{role:'user',content:txt}],max_tokens:300,temperature:0.2})
+      body:JSON.stringify({model:'groq/compound',messages:[{role:'system',content:sys},{role:'user',content:txt}],max_tokens:700,temperature:0.2})
     });
     if(!r.ok)throw new Error('Groq '+r.status);
     const data=await r.json();
@@ -1356,8 +1394,15 @@ async function addFood(){
     const m=raw.match(/\{[\s\S]*\}/);
     if(!m)throw new Error('AI nevrátila data');
     const j=JSON.parse(m[0]);
-    const row={date:ds(foodDate),name:j.name||txt,raw:txt,protein:+j.protein||0,kcal:+j.kcal||0,rating:['green','yellow','red'].includes(j.rating)?j.rating:'yellow',reason:j.reason||''};
-    const{data:ins,error}=await sb.from('food_log').insert(row).select();
+    let P=+j.protein||0,K=+j.kcal||0,partsTxt='';
+    if(Array.isArray(j.parts)&&j.parts.length){
+      const sp=j.parts.reduce((a,p)=>a+(+p.protein||0),0),sk=j.parts.reduce((a,p)=>a+(+p.kcal||0),0);
+      if(sk>0){P=sp;K=sk;}
+      partsTxt=j.parts.map(p=>p.item+' '+Math.round(+p.kcal||0)+' kcal').join(' · ');
+    }
+    const row={date:ds(foodDate),name:j.name||txt,raw:txt,protein:P,kcal:K,rating:['green','yellow','red'].includes(j.rating)?j.rating:'yellow',reason:j.reason||'',parts:partsTxt};
+    let{data:ins,error}=await sb.from('food_log').insert(row).select();
+    if(error&&/parts/.test(error.message)){delete row.parts;({data:ins,error}=await sb.from('food_log').insert(row).select());}
     if(error)throw new Error(error.message);
     if(ins&&ins.length)foodLog.push(ins[0]);else await loadFood();
     input.value='';
@@ -1365,6 +1410,16 @@ async function addFood(){
     showToast('+'+Math.round(row.protein)+' g bílkovin');
   }catch(e){showToast('Chyba: '+e.message);}
   btn.disabled=false;btn.textContent='+';
+}
+async function editFood(id){
+  const f=foodLog.find(x=>x.id===id);if(!f)return;
+  const v=prompt('Oprav hodnoty: bílkoviny/kcal',Math.round(+f.protein||0)+'/'+Math.round(+f.kcal||0));
+  if(!v)return;
+  const[p,k]=v.split('/').map(x=>parseFloat(x.replace(',','.')));
+  if(isNaN(p)||isNaN(k)){showToast('Formát: 50/600');return;}
+  const{error}=await sb.from('food_log').update({protein:p,kcal:k}).eq('id',id);
+  if(error){showToast('Chyba: '+error.message);return;}
+  f.protein=p;f.kcal=k;renderFood();showToast('Upraveno');
 }
 async function delFood(id){
   const{error}=await sb.from('food_log').delete().eq('id',id);
