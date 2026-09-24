@@ -1315,7 +1315,7 @@ async function sendAI(quickMsg){
 
 // ── STRAVA ─────────────────────────────────────
 const PROTEIN_GOAL=180; // ~2 g/kg při 91 kg
-const KCAL_TRAIN=2600, KCAL_REST=2350;
+const KCAL_TRAIN=2650, KCAL_REST=2400; // 26 let, 185 cm, 90 kg, 5-8k kroků
 function isTrainDay(d){return trainDates().has(d)||(!!weekPlans[d]&&!restDays.includes(d));}
 function kcalGoal(d){return isTrainDay(d)?KCAL_TRAIN:KCAL_REST;}
 const FOOD_COL={green:'#c8f542',yellow:'#f5c542',red:'#f54242'};
